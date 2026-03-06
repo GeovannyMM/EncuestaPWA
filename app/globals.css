@@ -1,2 +1,10 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+
+
+:root {
+    /* Puedes definir colores de DaisyUI aquí si quieres personalizarlos */
+    --font-size-censo: 16px;
+
+}
