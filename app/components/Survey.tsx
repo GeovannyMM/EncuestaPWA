@@ -1,11 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Props = {
   onTerminar: () => void;
+  onCancelar: () => void;
 };
 
-export default function Survey({ onTerminar }: Props) {
+type EtapaInterna = "datos_iniciales" | "preguntas";
+
+export default function Survey({ onTerminar, onCancelar }: Props) {
+  const [etapa, setEtapa] = useState<EtapaInterna>("datos_iniciales");
   const [lat, setLat] = useState<number | null>(null); // latitud del GPS
   const [lng, setLng] = useState<number | null>(null); // longitud del GPS
   const [lugar, setLugar] = useState(""); // nombre del lugar en texto
@@ -20,27 +24,110 @@ export default function Survey({ onTerminar }: Props) {
   const [p6, setP6] = useState("");
   const [p6cuantos, setP6cuantos] = useState("");
 
-  // pide la ubicación al navegador y la convierte a nombre de lugar
+  // pide la ubicación al navegador y la convierte a string
   const capturarGPS = async () => {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
+    navigator.geolocation.getCurrentPosition(async (pos) => { //API del navegador para obtener ubic. del usuario
       const latitud = pos.coords.latitude;
       const longitud = pos.coords.longitude;
       setLat(latitud);
       setLng(longitud);
 
-      // convierte coordenadas a nombre de lugar con Nominatim
+      // convierte coordenadas a nombre de lugar con Nominatim API" 
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${latitud}&lon=${longitud}&format=json`,
       );
       const data = await res.json();
       setLugar(
         data.address.city ||
-          data.address.town ||
-          data.address.village ||
-          "Lugar desconocido",
+        data.address.town ||
+        data.address.village ||
+        "Lugar desconocido",
       );
     });
   };
+
+  // se ejecuta cuando se oprime comfirmar datos
+  const handleComenzar = () => {
+    if (!p4nombre.trim()) {
+      alert("Por favor, ingresa el Nombre del Encuestado para comenzar.");
+      return;
+    }
+    // Si validó el nombre, iniciamos la captura GPS y cambiamos de pantalla
+    capturarGPS();
+    setEtapa("preguntas");
+  };
+
+  const guardarEncuestaLocal = () => {
+    // La aduana del nombre ya la pasamos al inicio, aquí va el guardado real después
+    onTerminar();
+  };
+
+
+  const cancelarEncuesta = () => {
+    const confirmar = window.confirm("¿Seguro que quieres cancelar la encuesta?? no se guardaran los datos");
+    if (confirmar) {
+      setP4nombre("");
+      setP1("");
+      setP2("");
+      setP2cual("");
+      setP3("");
+      setP3lengua("");
+      setP4("");
+      setP5("");
+      setP6("");
+      setP6cuantos("");
+      setLat(null);
+      setLng(null);
+      setLugar("");
+      setEtapa("datos_iniciales");
+      onCancelar();
+    }
+  }
+
+
+
+
+
+  if (etapa === "datos_iniciales") {
+    return (
+      <div className="flex flex-col p-6 gap-8 pb-32 min-h-screen justify-center items-center">
+        <div className="w-full max-w-sm flex flex-col gap-6 bg-white p-8 rounded-2xl shadow-lg border">
+          <h1 className="text-gray-500 text-3xl font-bold text-center">Nueva Encuesta</h1>
+          <p className="text-xl text-gray-500 text-center">Datos del beneficiario</p>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-500 text-xl font-bold">Nombre Completo:</label>
+            <input
+              className="border-gray-400 p-4 text-2xl rounded text-gray-500"
+              placeholder="Escribe el nombre aquí"
+              value={p4nombre}
+              onChange={(e) => setP4nombre(e.target.value)}
+            />
+          </div>
+
+          <button
+            className="bg-red-500 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full mt-4 font-bold"
+            onClick={handleComenzar}
+          >
+            Comenzar Cuestionario
+          </button>
+
+
+          <button
+            className="bg-gray-400 text-taupe-950 tetx-xl rounded-xl p-4 w-full mt-2 font-bold"
+            onClick={onCancelar}
+          >
+            Cancelar y regresar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+
+
+
+
 
   return (
     <div className="flex flex-col p-6 gap-8 pb-32">
@@ -186,12 +273,18 @@ export default function Survey({ onTerminar }: Props) {
             No
           </label>
         </div>
-        <input
-          className="border p-4 text-2xl rounded mt-2"
-          placeholder="Escriba su nombre completo y su edad"
-          value={p4nombre}
-          onChange={(e) => setP4nombre(e.target.value)}
-        />
+
+
+        {p4 === "si" && (
+          <input
+            className="border p-4 text-2xl rounded mt-2"
+            placeholder="Escribe tu nombre y edad"
+          />
+        )}
+
+
+
+
       </div>
 
       {/* PREGUNTA 5 */}
@@ -199,7 +292,7 @@ export default function Survey({ onTerminar }: Props) {
         <p className="text-2xl">5. Escriba las vocales</p>
         <input
           className="border p-4 text-2xl rounded"
-          placeholder="a, e, i, o, u"
+          placeholder="Vocales"
           value={p5}
           onChange={(e) => setP5(e.target.value)}
         />
@@ -244,9 +337,17 @@ export default function Survey({ onTerminar }: Props) {
       {/* BOTÓN FINALIZAR */}
       <button
         className="bg-red-600 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full"
-        onClick={onTerminar}
+        onClick={guardarEncuestaLocal}
       >
-        Finalizar Encuesta ✓
+        Guardar Encuesta ✓
+      </button>
+
+
+      <button
+        className="bg-gray-500 tetx-black text-2xl font-bold rounded-xl p-6 min-h-[80px] w-full mb-4"
+        onClick={cancelarEncuesta}
+      >
+        Cancelar Encuesta X
       </button>
     </div>
   );

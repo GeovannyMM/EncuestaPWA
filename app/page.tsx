@@ -12,12 +12,19 @@ export default function Home() {
 
   return (
     <div>
-      {step === "login" && <Login onLogin={() => setStep("dashboard")} />}
-      {step === "dashboard" && (
+      {step === "login" &&
+        <Login onLogin={() => setStep("dashboard")} />
+      }
+      {step === "dashboard" &&
         <Dashboard onNuevaEncuesta={() => setStep("survey")} />
-      )}
-      {step === "survey" && <Survey onTerminar={() => setStep("success")} />}
-      {step === "success" && <Success onVolver={() => setStep("dashboard")} />}
+      }
+      {step === "survey" &&
+        <Survey onTerminar={() => setStep("success")}
+          onCancelar={() => setStep("dashboard")} />
+      }
+      {step === "success" &&
+        <Success onVolver={() => setStep("dashboard")} />
+      }
     </div>
   );
 }

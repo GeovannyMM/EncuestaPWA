@@ -1,15 +1,17 @@
 import Dexie, { type Table } from "dexie";
-import { type Encuesta } from "../shared/validators";
+import { type Encuesta, type Usuario } from "../shared/validators";
 
-export {};
+export { };
 export class EncuestasDB extends Dexie {
-  encuestas!: Table<Encuesta>;
+    encuestas!: Table<Encuesta>;
+    usuarios!: Table<Usuario>;
 
-  constructor() {
-    super("EncuestasDB");
-    this.version(1).stores({
-      encuestas:
-        "++id, entrevistador, folio, nombreEncuestado, fechaHora, ubicacion",
-    });
-  }
+    constructor() {
+        super("EncuestasDB");
+        this.version(1).stores({
+            encuestas:
+                "++id, entrevistador, folio, nombreEncuestado, fechaHora, ubicacion, estado_sinc",
+            usuarios: "id, nombre_completo, usuario_slug"
+        });
+    }
 }
