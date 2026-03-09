@@ -17,3 +17,4 @@ export const encuestaSchema = z.object({
 
 // Exportamos el Tipo para que Dexie sepa qué forma tienen los datos
 export type Encuesta = z.infer<typeof encuestaSchema>;
+
