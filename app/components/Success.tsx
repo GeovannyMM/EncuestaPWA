@@ -12,7 +12,7 @@ export default function Success({ onVolver }: Props) {
       <h1 className="text-4xl font-bold text-center">¡Encuesta Guardada!</h1>
 
       <p className="text-2xl text-center text-gray-500">
-        Los datos quedaron guardados en el dispositivo.
+        Los datos se guardaron.
       </p>
 
       <button

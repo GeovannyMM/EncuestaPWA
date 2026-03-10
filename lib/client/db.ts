@@ -15,3 +15,5 @@ export class EncuestasDB extends Dexie {
         });
     }
 }
+
+export const db = new EncuestasDB();

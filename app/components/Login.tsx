@@ -2,18 +2,31 @@
 import { useState } from "react";
 
 type Props = {
-  onLogin: () => void;
+  onLogin: (id: number, nombre: string) => void;
 };
+
+
+// temporal login
+const usuariosTemporales = [
+  { id: 1, nombre_completo: "Juan Pérez", usuario_slug: "juanP" },
+  { id: 2, nombre_completo: "María López", usuario_slug: "mariaL" },
+  { id: 3, nombre_completo: "Carlos Ruiz", usuario_slug: "carlosR" },
+];
+
 
 export default function Login({ onLogin }: Props) {
   const [usuario, setUsuario] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = () => {
-    if (usuario.trim() !== "") {
-      onLogin();
+    const usuarioEncontrado = usuariosTemporales.find(
+      (u) => u.usuario_slug === usuario.trim()
+    );
+
+    if (usuarioEncontrado) {
+      onLogin(usuarioEncontrado.id, usuarioEncontrado.nombre_completo);
     } else {
-      setError("Ingresa tu usuario para continuar");
+      setError("Usuario no tiene acceso");
     }
   };
 

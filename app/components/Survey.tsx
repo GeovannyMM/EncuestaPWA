@@ -1,14 +1,25 @@
 "use client";
 import { useState, useEffect } from "react";
+import { db } from "../../lib/client/db";
+import { generarFolio } from "../../lib/shared/utils";
 
 type Props = {
   onTerminar: () => void;
   onCancelar: () => void;
+
+  //recibe el id del entrevistador
+  entrevistadorId: number;
+  entrevistadorNombre: string;
 };
 
 type EtapaInterna = "datos_iniciales" | "preguntas";
 
-export default function Survey({ onTerminar, onCancelar }: Props) {
+export default function Survey({
+  onTerminar,
+  onCancelar,
+  entrevistadorId,
+  entrevistadorNombre,
+}: Props) {
   const [etapa, setEtapa] = useState<EtapaInterna>("datos_iniciales");
   const [lat, setLat] = useState<number | null>(null); // latitud del GPS
   const [lng, setLng] = useState<number | null>(null); // longitud del GPS
@@ -26,22 +37,23 @@ export default function Survey({ onTerminar, onCancelar }: Props) {
 
   // pide la ubicación al navegador y la convierte a string
   const capturarGPS = async () => {
-    navigator.geolocation.getCurrentPosition(async (pos) => { //API del navegador para obtener ubic. del usuario
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      //API del navegador para obtener ubic. del usuario
       const latitud = pos.coords.latitude;
       const longitud = pos.coords.longitude;
       setLat(latitud);
       setLng(longitud);
 
-      // convierte coordenadas a nombre de lugar con Nominatim API" 
+      // convierte coordenadas a nombre de lugar con Nominatim API"
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?lat=${latitud}&lon=${longitud}&format=json`,
       );
       const data = await res.json();
       setLugar(
         data.address.city ||
-        data.address.town ||
-        data.address.village ||
-        "Lugar desconocido",
+          data.address.town ||
+          data.address.village ||
+          "Lugar desconocido",
       );
     });
   };
@@ -57,14 +69,50 @@ export default function Survey({ onTerminar, onCancelar }: Props) {
     setEtapa("preguntas");
   };
 
-  const guardarEncuestaLocal = () => {
-    // La aduana del nombre ya la pasamos al inicio, aquí va el guardado real después
-    onTerminar();
+  const guardarEncuestaLocal = async () => {
+    try {
+      //1.-se crea el folio
+      const nuevoFolio = generarFolio(entrevistadorId);
+
+      //2.- empaqueta todo el schema de zod de validators.tsx
+      const encuestaData = {
+        entrevistador: entrevistadorId,
+        folio: nuevoFolio,
+        nombreEncuestado: p4nombre,
+        fechaHora: new Date().toISOString(), //hora del dispositivo
+        ubicacion: {
+          lat: lat || 0,
+          lng: lng || 0,
+        },
+        estado_sinc: false,
+        respuestas: {
+          p1,
+          p2,
+          p2cual,
+          p3,
+          p3lengua,
+          p4,
+          p5,
+          p6,
+          p6cuantos,
+        },
+      };
+
+      //3.- mandamos a la base de datos interna Dexie
+      await db.encuestas.add(encuestaData);
+
+      //4.- si Dexie lo guadó, muestra un mensaje de exito
+      onTerminar();
+    } catch (error) {
+      console.error("Error al guardar la encuesta:", error);
+      alert("Error al guardar la encuesta. Intenta de nuevo.");
+    }
   };
 
-
   const cancelarEncuesta = () => {
-    const confirmar = window.confirm("¿Seguro que quieres cancelar la encuesta?? no se guardaran los datos");
+    const confirmar = window.confirm(
+      "¿Seguro que quieres cancelar la encuesta?? no se guardaran los datos",
+    );
     if (confirmar) {
       setP4nombre("");
       setP1("");
@@ -82,21 +130,23 @@ export default function Survey({ onTerminar, onCancelar }: Props) {
       setEtapa("datos_iniciales");
       onCancelar();
     }
-  }
-
-
-
-
+  };
 
   if (etapa === "datos_iniciales") {
     return (
       <div className="flex flex-col p-6 gap-8 pb-32 min-h-screen justify-center items-center">
         <div className="w-full max-w-sm flex flex-col gap-6 bg-white p-8 rounded-2xl shadow-lg border">
-          <h1 className="text-gray-500 text-3xl font-bold text-center">Nueva Encuesta</h1>
-          <p className="text-xl text-gray-500 text-center">Datos del beneficiario</p>
+          <h1 className="text-gray-500 text-3xl font-bold text-center">
+            Nueva Encuesta
+          </h1>
+          <p className="text-xl text-gray-500 text-center">
+            Datos del beneficiario
+          </p>
 
           <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xl font-bold">Nombre Completo:</label>
+            <label className="text-gray-500 text-xl font-bold">
+              Nombre Completo:
+            </label>
             <input
               className="border-gray-400 p-4 text-2xl rounded text-gray-500"
               placeholder="Escribe el nombre aquí"
@@ -112,7 +162,6 @@ export default function Survey({ onTerminar, onCancelar }: Props) {
             Comenzar Cuestionario
           </button>
 
-
           <button
             className="bg-gray-400 text-taupe-950 tetx-xl rounded-xl p-4 w-full mt-2 font-bold"
             onClick={onCancelar}
@@ -123,11 +172,6 @@ export default function Survey({ onTerminar, onCancelar }: Props) {
       </div>
     );
   }
-
-
-
-
-
 
   return (
     <div className="flex flex-col p-6 gap-8 pb-32">
@@ -274,17 +318,12 @@ export default function Survey({ onTerminar, onCancelar }: Props) {
           </label>
         </div>
 
-
         {p4 === "si" && (
           <input
             className="border p-4 text-2xl rounded mt-2"
             placeholder="Escribe tu nombre y edad"
           />
         )}
-
-
-
-
       </div>
 
       {/* PREGUNTA 5 */}
@@ -341,7 +380,6 @@ export default function Survey({ onTerminar, onCancelar }: Props) {
       >
         Guardar Encuesta ✓
       </button>
-
 
       <button
         className="bg-gray-500 tetx-black text-2xl font-bold rounded-xl p-6 min-h-[80px] w-full mb-4"

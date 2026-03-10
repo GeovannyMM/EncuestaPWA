@@ -10,9 +10,10 @@ type Encuesta = {
 
 type Props = {
   onNuevaEncuesta: () => void;
+  nombreEntrevistador: string;
 };
 
-export default function Dashboard({ onNuevaEncuesta }: Props) {
+export default function Dashboard({ onNuevaEncuesta, nombreEntrevistador }: Props) {
   {
     /*datos temporales en lo que conecto a Dexie*/
   }
@@ -43,7 +44,7 @@ export default function Dashboard({ onNuevaEncuesta }: Props) {
   return (
     <div className="flex flex-col min-h-screen p-6 gap-6">
       <p className="text-2xl">
-        Bienvenido, <strong>Entrevistador</strong>
+        Bienvenido, <strong>{nombreEntrevistador}</strong>
       </p>
       {/*titulo de la seccion*/}
       <h1 className="text-3xl fond-bold">Encuestas Realizadas</h1>
