@@ -24,6 +24,8 @@ export default function Survey({
   const [lat, setLat] = useState<number | null>(null); // latitud del GPS
   const [lng, setLng] = useState<number | null>(null); // longitud del GPS
   const [lugar, setLugar] = useState(""); // nombre del lugar en texto
+  const [cargandoGPS, setCargandoGPS] = useState(false);
+  const [errorGPS, setErrorGPS] = useState("");
   const [p1, setP1] = useState("");
   const [p2, setP2] = useState("");
   const [p2cual, setP2cual] = useState("");
@@ -35,38 +37,68 @@ export default function Survey({
   const [p6, setP6] = useState("");
   const [p6cuantos, setP6cuantos] = useState("");
 
-  // pide la ubicación al navegador y la convierte a string
-  const capturarGPS = async () => {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      //API del navegador para obtener ubic. del usuario
-      const latitud = pos.coords.latitude;
-      const longitud = pos.coords.longitude;
-      setLat(latitud);
-      setLng(longitud);
+  // pide la ubicación al navegador, espera y avisa si tuvo exito
 
-      // convierte coordenadas a nombre de lugar con Nominatim API"
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${latitud}&lon=${longitud}&format=json`,
-      );
-      const data = await res.json();
-      setLugar(
-        data.address.city ||
-          data.address.town ||
-          data.address.village ||
-          "Lugar desconocido",
+  const capturarGPS = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setErrorGPS("");
+      if (!navigator.geolocation) {
+        setErrorGPS("Tu navegador no soporta la geolocalización");
+        resolve(false);
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const latitud = pos.coords.latitude;
+          const longitud = pos.coords.longitude;
+          setLat(latitud);
+          setLng(longitud);
+
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${latitud}&lon=${longitud}&format=json`,
+            );
+            const data = await res.json();
+            setLugar(
+              data.address.city ||
+                data.address.town ||
+                data.address.village ||
+                "Lugar desconocido",
+            );
+          } catch (error) {
+            setLugar("Error de conexión al mapa");
+          }
+          resolve(true); //GPS exitoso
+        },
+        //el usuario rechazo los permisos o el GPS esta desactivado
+        (error) => {
+          console.error("Error GPS:", error);
+          setErrorGPS(
+            "Atención: No podemos iniciar sin ubicación. Por favor, ENCIENDE tu GPS",
+          );
+          resolve(false);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
       );
     });
   };
 
   // se ejecuta cuando se oprime comfirmar datos
-  const handleComenzar = () => {
+  const handleComenzar = async () => {
     if (!p4nombre.trim()) {
       alert("Por favor, ingresa el Nombre del Encuestado para comenzar.");
       return;
     }
-    // Si validó el nombre, iniciamos la captura GPS y cambiamos de pantalla
-    capturarGPS();
-    setEtapa("preguntas");
+    //1.- pantalla "cargando..." y se deshabilita el boton de comfirmar datos
+    setCargandoGPS(true);
+    //2.- La promesa de la antena regresa verdad o falso
+    const gpsExitoso = await capturarGPS();
+    // se apaga la pantalla
+    setCargandoGPS(false);
+
+    if (gpsExitoso === true) {
+      setEtapa("preguntas");
+    }
   };
 
   const guardarEncuestaLocal = async () => {
@@ -140,34 +172,48 @@ export default function Survey({
             Nueva Encuesta
           </h1>
           <p className="text-xl text-gray-500 text-center">
-            Datos del beneficiario
+            Datos del encuestado
           </p>
 
           <div className="flex flex-col gap-2">
             <label className="text-gray-500 text-xl font-bold">
-              Nombre Completo:
+              Nombre Completo y edad:
             </label>
             <input
               className="border-gray-400 p-4 text-2xl rounded text-gray-500"
               placeholder="Escribe el nombre aquí"
               value={p4nombre}
               onChange={(e) => setP4nombre(e.target.value)}
+              disabled={cargandoGPS}
             />
           </div>
 
-          <button
-            className="bg-red-500 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full mt-4 font-bold"
-            onClick={handleComenzar}
-          >
-            Comenzar Cuestionario
-          </button>
+          {errorGPS && (
+            <div className="bg-red-100 text-red-500 rounded-xl text-center font-bold">
+              {errorGPS}
+            </div>
+          )}
 
           <button
-            className="bg-gray-400 text-taupe-950 tetx-xl rounded-xl p-4 w-full mt-2 font-bold"
-            onClick={onCancelar}
+            className={`${cargandoGPS ? "opacity-50 cursor-not-allowed" : ""}  bg-red-500 text-white text-2xl rounded-xl 
+            p-6 min-h-[80px] w-full mt-4 font-bold transition-all`}
+            onClick={handleComenzar}
+            disabled={cargandoGPS}
           >
-            Cancelar y regresar
+            {cargandoGPS
+              ? "Obteniendo ubicación..."
+              : errorGPS
+                ? "Intentar de nuevo"
+                : "Comenzar Cuestionario"}
           </button>
+          {!cargandoGPS && (
+            <button
+              className="bg-gray-400 text-taupe-950 tetx-xl rounded-xl p-4 w-full mt-2 font-bold"
+              onClick={onCancelar}
+            >
+              Cancelar y regresar
+            </button>
+          )}
         </div>
       </div>
     );
