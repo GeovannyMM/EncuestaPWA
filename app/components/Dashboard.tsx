@@ -14,6 +14,7 @@ type Props = {
   onNuevaEncuesta: () => void;
   nombreEntrevistador: string;
   entrevistadorId: number;
+  onCerrarSesion: () => void;
 };
 
 export default function Dashboard({
@@ -49,6 +50,51 @@ export default function Dashboard({
     };
     cargarDatos();
   }, [entrevistadorId]);
+
+  //con conexion
+
+  useEffect(() => {
+    const resolverLugaresPendientes = async () => {
+      if (!navigator.onLine) return;
+      const pendientes = encuestasReales.filter(
+        (e) => !e.lugar && e.ubicacion.lat !== 0,
+      );
+      if (pendientes.length == 0) return;
+
+      for (const enc of pendientes) {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${enc.ubicacion.lat}&lon=${enc.ubicacion.lng}&format=json`,
+          );
+          const data = await res.json();
+          const nombreLugar =
+            data.address.city ||
+            data.address.town ||
+            data.address.village ||
+            "Lugar desconocido";
+          await db.encuestas.update(enc.id, { lugar: nombreLugar });
+          setEncuestasReales((prev) =>
+            prev.map((e) =>
+              e.id === enc.id ? { ...e, lugar: nombreLugar } : e,
+            ),
+          );
+        } catch {}
+      }
+    };
+    resolverLugaresPendientes();
+  }, [encuestasReales]);
+
+  const borrarEncuesta = async (id: number) => {
+    const confirmar = window.confirm(
+      "¿Seguro que quieres borrar esta encuesta?",
+    );
+    if (confirmar) {
+      await db.encuestas.delete(id);
+      // Recarga la lista quitando la borrada
+      setEncuestasReales((prev) => prev.filter((e) => e.id !== id));
+      setTotalEncuestas((prev) => prev - 1);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen p-6 gap-6">
@@ -87,7 +133,10 @@ export default function Dashboard({
                 })}
               </p>
               <p className="text-sm text-gray-400 truncate">
-                {enc.ubicacion.lat === 0 ? "sin GPS" : "Con ubicación de GPS"}
+                {enc.lugar ||
+                  (enc.ubicacion.lat === 0
+                    ? "Sin ubicación"
+                    : `${enc.ubicacion.lat.toFixed(4)}, ${enc.ubicacion.lng.toFixed(4)}`)}
               </p>
               {/* status: verde si sincronizada, naranja si pendiente */}
               <span
@@ -95,6 +144,12 @@ export default function Dashboard({
               >
                 {enc.estado_sinc ? "✅ Sincronizada" : "🟠 Pendiente"}
               </span>
+              <button
+                onClick={() => borrarEncuesta(enc.id)}
+                className="text-red-400 text-sm underline mt-1"
+              >
+                Borrar
+              </button>
             </div>
           ))
         )}

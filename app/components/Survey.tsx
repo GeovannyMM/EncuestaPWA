@@ -26,6 +26,7 @@ export default function Survey({
   const [lugar, setLugar] = useState(""); // nombre del lugar en texto
   const [cargandoGPS, setCargandoGPS] = useState(false);
   const [errorGPS, setErrorGPS] = useState("");
+  const [guardando, setGuardando] = useState(false);
   const [p1, setP1] = useState("");
   const [p2, setP2] = useState("");
   const [p2cual, setP2cual] = useState("");
@@ -66,7 +67,7 @@ export default function Survey({
                 "Lugar desconocido",
             );
           } catch (error) {
-            setLugar("Error de conexión al mapa");
+            setLugar("");
           }
           resolve(true); //GPS exitoso
         },
@@ -103,6 +104,7 @@ export default function Survey({
 
   const guardarEncuestaLocal = async () => {
     try {
+      setGuardando(true);
       //1.-se crea el folio
       const nuevoFolio = generarFolio(entrevistadorId);
 
@@ -116,6 +118,7 @@ export default function Survey({
           lat: lat || 0,
           lng: lng || 0,
         },
+        lugar: lugar || "sin ubicacion",
         estado_sinc: false,
         respuestas: {
           p1,
@@ -138,6 +141,7 @@ export default function Survey({
     } catch (error) {
       console.error("Error al guardar la encuesta:", error);
       alert("Error al guardar la encuesta. Intenta de nuevo.");
+      setGuardando(false);
     }
   };
 
@@ -421,10 +425,11 @@ export default function Survey({
 
       {/* BOTÓN FINALIZAR */}
       <button
-        className="bg-red-600 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full"
+        className={`${guardando ? "opacity-50 cursor-not-allowed" : ""} bg-red-600 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full`}
         onClick={guardarEncuestaLocal}
+        disabled={guardando}
       >
-        Guardar Encuesta ✓
+        {guardando ? "Guardando..." : "Guardar Encuesta ✓"}
       </button>
 
       <button

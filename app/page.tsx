@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Script from "next/script";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import Survey from "./components/Survey";
@@ -22,23 +23,32 @@ export default function Home() {
       setEntrevistadorNombre(datos.nombre);
       setStep("dashboard");
     }
-    setCargandoSesion(false); // Ya revisamos, quitamos la pantalla blanca
+    setCargandoSesion(false);
   }, []);
 
-  // Si apenas está buscando en la memoria, no dibujamos nada
   if (cargandoSesion) return null;
 
   return (
     <div>
+      {/* --- ERUDA PARA DESARROLLO CELULAR --- */}
+      <Script
+        src="//cdn.jsdelivr.net/npm/eruda"
+        strategy="lazyOnload"
+        onLoad={() => {
+          if (typeof window !== "undefined" && (window as any).eruda) {
+            (window as any).eruda.init();
+          }
+        }}
+      />
+      {/* ------------------------------------- */}
       {step === "login" && (
         <Login
           onLogin={(id, nombre) => {
             setEntrevistadorId(id);
             setEntrevistadorNombre(nombre);
-            // Guardamos en la memoria del celular para siempre
             localStorage.setItem(
               "encuesta_sesion",
-              JSON.stringify({ id, nombre })
+              JSON.stringify({ id, nombre }),
             );
             setStep("dashboard");
           }}
@@ -47,6 +57,12 @@ export default function Home() {
       {step === "dashboard" && (
         <Dashboard
           onNuevaEncuesta={() => setStep("survey")}
+          onCerrarSesion={() => {
+            localStorage.removeItem("encuesta_sesion");
+            setEntrevistadorId(0);
+            setEntrevistadorNombre("");
+            setStep("login");
+          }}
           nombreEntrevistador={entrevistadorNombre}
           entrevistadorId={entrevistadorId}
         />

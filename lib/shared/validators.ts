@@ -18,6 +18,7 @@ export const encuestaSchema = z.object({
       lng: z.number(),
     })
     .optional(),
+  lugar : z.string().optional(),
   respuestas: z.record(z.string(), z.any()),
   fechaHora: z.string(),
   estado_sinc: z.boolean(),
