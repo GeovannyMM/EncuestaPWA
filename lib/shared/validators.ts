@@ -12,6 +12,10 @@ export const encuestaSchema = z.object({
   entrevistador: z.number(),
   folio: z.string(),
   nombreEncuestado: z.string().min(5),
+  nombre: z.string().min(2),
+  apellidoPaterno: z.string().min(2),
+  apellidoMaterno: z.string().min(2),
+  edad: z.string(),
   ubicacion: z
     .object({
       lat: z.number(),

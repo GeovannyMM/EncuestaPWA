@@ -33,7 +33,11 @@ export default function Survey({
   const [p3, setP3] = useState("");
   const [p3lengua, setP3lengua] = useState("");
   const [p4, setP4] = useState("");
-  const [p4nombre, setP4nombre] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [apellidoPaterno, setApellidoPaterno] = useState("");
+  const [apellidoMaterno, setApellidoMaterno] = useState("");
+  const [edad, setEdad] = useState("");
+  const [p4escrito, setP4escrito] = useState("");
   const [p5, setP5] = useState("");
   const [p6, setP6] = useState("");
   const [p6cuantos, setP6cuantos] = useState("");
@@ -86,8 +90,13 @@ export default function Survey({
 
   // se ejecuta cuando se oprime comfirmar datos
   const handleComenzar = async () => {
-    if (!p4nombre.trim()) {
-      alert("Por favor, ingresa el Nombre del Encuestado para comenzar.");
+    if (
+      !nombre.trim() ||
+      !apellidoPaterno.trim() ||
+      !apellidoMaterno.trim() ||
+      !edad.trim()
+    ) {
+      alert("Por favor, ingresa los datos del encuestado para comenzar.");
       return;
     }
     //1.- pantalla "cargando..." y se deshabilita el boton de comfirmar datos
@@ -112,13 +121,18 @@ export default function Survey({
       const encuestaData = {
         entrevistador: entrevistadorId,
         folio: nuevoFolio,
-        nombreEncuestado: p4nombre,
+        nombreEncuestado:
+          `${nombre} ${apellidoPaterno} ${apellidoMaterno}`.trim(),
+        nombre,
+        apellidoPaterno,
+        apellidoMaterno,
+        edad,
         fechaHora: new Date().toISOString(), //hora del dispositivo
         ubicacion: {
           lat: lat || 0,
           lng: lng || 0,
         },
-        lugar: lugar || "sin ubicacion",
+        lugar: lugar,
         estado_sinc: false,
         respuestas: {
           p1,
@@ -127,6 +141,7 @@ export default function Survey({
           p3,
           p3lengua,
           p4,
+          p4escrito,
           p5,
           p6,
           p6cuantos,
@@ -150,13 +165,17 @@ export default function Survey({
       "¿Seguro que quieres cancelar la encuesta?? no se guardaran los datos",
     );
     if (confirmar) {
-      setP4nombre("");
+      setNombre("");
+      setApellidoPaterno("");
+      setApellidoMaterno("");
+      setEdad("");
       setP1("");
       setP2("");
       setP2cual("");
       setP3("");
       setP3lengua("");
       setP4("");
+      setP4escrito("");
       setP5("");
       setP6("");
       setP6cuantos("");
@@ -181,13 +200,50 @@ export default function Survey({
 
           <div className="flex flex-col gap-2">
             <label className="text-gray-500 text-xl font-bold">
-              Nombre Completo y edad:
+              Nombre(s):
             </label>
             <input
               className="border-gray-400 p-4 text-2xl rounded text-gray-500"
-              placeholder="Escribe el nombre aquí"
-              value={p4nombre}
-              onChange={(e) => setP4nombre(e.target.value)}
+              placeholder="Nombre(s)"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              disabled={cargandoGPS}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-500 text-xl font-bold">
+              Apellido Paterno:
+            </label>
+            <input
+              className="border-gray-400 p-4 text-2xl rounded text-gray-500"
+              placeholder="Apellido Paterno"
+              value={apellidoPaterno}
+              onChange={(e) => setApellidoPaterno(e.target.value)}
+              disabled={cargandoGPS}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-500 text-xl font-bold">
+              Apellido Materno:
+            </label>
+            <input
+              className="border-gray-400 p-4 text-2xl rounded text-gray-500"
+              placeholder="Apellido Materno"
+              value={apellidoMaterno}
+              onChange={(e) => setApellidoMaterno(e.target.value)}
+              disabled={cargandoGPS}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-gray-500 text-xl font-bold">Edad:</label>
+            <input
+              className="border-gray-400 p-4 text-2xl rounded text-gray-500"
+              placeholder="Edad"
+              value={edad}
+              onChange={(e) => setEdad(e.target.value)}
               disabled={cargandoGPS}
             />
           </div>
@@ -212,7 +268,7 @@ export default function Survey({
           </button>
           {!cargandoGPS && (
             <button
-              className="bg-gray-400 text-taupe-950 tetx-xl rounded-xl p-4 w-full mt-2 font-bold"
+              className="bg-gray-400 text-taupe-950 text-xl rounded-xl p-4 w-full mt-2 font-bold"
               onClick={onCancelar}
             >
               Cancelar y regresar
@@ -372,6 +428,8 @@ export default function Survey({
           <input
             className="border p-4 text-2xl rounded mt-2"
             placeholder="Escribe tu nombre y edad"
+            value={p4escrito}
+            onChange={(e) => setP4escrito(e.target.value)}
           />
         )}
       </div>
@@ -433,7 +491,7 @@ export default function Survey({
       </button>
 
       <button
-        className="bg-gray-500 tetx-black text-2xl font-bold rounded-xl p-6 min-h-[80px] w-full mb-4"
+        className="bg-gray-500 text-black text-2xl font-bold rounded-xl p-6 min-h-[80px] w-full mb-4"
         onClick={cancelarEncuesta}
       >
         Cancelar Encuesta X

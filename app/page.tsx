@@ -42,7 +42,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen w-full flex flex-col bg-white text-black">
-      {/* ... todo lo que sigue después se queda igual ... */}
+      {/* ....................................................................... */}
 
       <div>
         {/* --- ERUDA PARA DESARROLLO CELULAR --- */}

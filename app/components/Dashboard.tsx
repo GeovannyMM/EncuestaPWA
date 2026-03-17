@@ -2,14 +2,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../../lib/client/db";
 
-type Encuesta = {
-  folio: string;
-  encuestado: string;
-  fecha: string;
-  lugar: string;
-  sincronizada: boolean;
-};
-
 type Props = {
   onNuevaEncuesta: () => void;
   nombreEntrevistador: string;
@@ -21,6 +13,7 @@ export default function Dashboard({
   onNuevaEncuesta,
   nombreEntrevistador,
   entrevistadorId,
+  onCerrarSesion,
 }: Props) {
   {
     /*datos temporales en lo que conecto a Dexie*/
@@ -101,6 +94,12 @@ export default function Dashboard({
       <p className="text-2xl">
         Bienvenido, <strong>{nombreEntrevistador}</strong>
       </p>
+      <button
+        onClick={onCerrarSesion}
+        className="text-red-500 text-sm underline"
+      >
+        Cerrar Sesión
+      </button>
       {/*titulo de la seccion con total real*/}
       <h1 className="text-3xl font-bold">
         Encuestas Realizadas
