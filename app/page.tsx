@@ -15,67 +15,85 @@ export default function Home() {
   const [cargandoSesion, setCargandoSesion] = useState(true);
 
   // Al abrir la app, buscamos si ya había alguien logueado en la memoria
+  // Al abrir la app, buscamos si ya había alguien logueado en la memoria
   useEffect(() => {
-    const sesionGuardada = localStorage.getItem("encuesta_sesion");
-    if (sesionGuardada) {
-      const datos = JSON.parse(sesionGuardada);
-      setEntrevistadorId(datos.id);
-      setEntrevistadorNombre(datos.nombre);
-      setStep("dashboard");
+    try {
+      const sesionGuardada = localStorage.getItem("encuesta_sesion");
+      if (sesionGuardada) {
+        const datos = JSON.parse(sesionGuardada);
+        // Validamos que 'datos' realmente sea un objeto con la propiedad id
+        if (datos && datos.id) {
+          setEntrevistadorId(datos.id);
+          setEntrevistadorNombre(datos.nombre);
+          setStep("dashboard");
+        } else {
+          localStorage.removeItem("encuesta_sesion"); // Limpiar basura
+        }
+      }
+    } catch (error) {
+      console.warn("Dato inválido en sesión, limpiando...", error);
+      localStorage.removeItem("encuesta_sesion"); // Limpiamos la basura si JSON falla
+    } finally {
+      setCargandoSesion(false); // Siempre se debe quitar la pantalla de carga
     }
-    setCargandoSesion(false);
   }, []);
 
   if (cargandoSesion) return null;
 
   return (
-    <div>
-      {/* --- ERUDA PARA DESARROLLO CELULAR --- */}
-      <Script
-        src="//cdn.jsdelivr.net/npm/eruda"
-        strategy="lazyOnload"
-        onLoad={() => {
-          if (typeof window !== "undefined" && (window as any).eruda) {
-            (window as any).eruda.init();
-          }
-        }}
-      />
-      {/* ------------------------------------- */}
-      {step === "login" && (
-        <Login
-          onLogin={(id, nombre) => {
-            setEntrevistadorId(id);
-            setEntrevistadorNombre(nombre);
-            localStorage.setItem(
-              "encuesta_sesion",
-              JSON.stringify({ id, nombre }),
-            );
-            setStep("dashboard");
+    <main className="min-h-screen w-full flex flex-col bg-white text-black">
+      {/* ... todo lo que sigue después se queda igual ... */}
+
+      <div>
+        {/* --- ERUDA PARA DESARROLLO CELULAR --- */}
+        <Script
+          src="//cdn.jsdelivr.net/npm/eruda"
+          strategy="lazyOnload"
+          onLoad={() => {
+            if (typeof window !== "undefined" && (window as any).eruda) {
+              (window as any).eruda.init();
+            }
           }}
         />
-      )}
-      {step === "dashboard" && (
-        <Dashboard
-          onNuevaEncuesta={() => setStep("survey")}
-          onCerrarSesion={() => {
-            localStorage.removeItem("encuesta_sesion");
-            setEntrevistadorId(0);
-            setEntrevistadorNombre("");
-            setStep("login");
-          }}
-          nombreEntrevistador={entrevistadorNombre}
-          entrevistadorId={entrevistadorId}
-        />
-      )}
-      {step === "survey" && (
-        <Survey
-          onTerminar={() => setStep("success")}
-          onCancelar={() => setStep("dashboard")}
-          entrevistadorId={entrevistadorId}
-          entrevistadorNombre={entrevistadorNombre}
-        />
-      )}
-      {step === "success" && <Success onVolver={() => setStep("dashboard")} />}
-    </div>
+        {/* ------------------------------------- */}
+        {step === "login" && (
+          <Login
+            onLogin={(id, nombre) => {
+              setEntrevistadorId(id);
+              setEntrevistadorNombre(nombre);
+              localStorage.setItem(
+                "encuesta_sesion",
+                JSON.stringify({ id, nombre }),
+              );
+              setStep("dashboard");
+            }}
+          />
+        )}
+        {step === "dashboard" && (
+          <Dashboard
+            onNuevaEncuesta={() => setStep("survey")}
+            onCerrarSesion={() => {
+              localStorage.removeItem("encuesta_sesion");
+              setEntrevistadorId(0);
+              setEntrevistadorNombre("");
+              setStep("login");
+            }}
+            nombreEntrevistador={entrevistadorNombre}
+            entrevistadorId={entrevistadorId}
+          />
+        )}
+        {step === "survey" && (
+          <Survey
+            onTerminar={() => setStep("success")}
+            onCancelar={() => setStep("dashboard")}
+            entrevistadorId={entrevistadorId}
+            entrevistadorNombre={entrevistadorNombre}
+          />
+        )}
+        {step === "success" && (
+          <Success onVolver={() => setStep("dashboard")} />
+        )}
+      </div>
+    </main>
   );
 }
