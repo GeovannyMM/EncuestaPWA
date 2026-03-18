@@ -89,6 +89,50 @@ export default function Dashboard({
     }
   };
 
+  const sincronizarEncuestas = async () => {
+    const pendientes = encuestasReales.filter((e) => !e.estado_sinc);
+    if (pendientes.length === 0) {
+      // alert("No hay encuestas pendientes de sincronizar");
+      return;
+    }
+
+    let exitosas = 0;
+    for (const enc of pendientes) {
+      try {
+        const res = await fetch("/api/sync", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(enc),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          await db.encuestas.update(enc.id, { estado_sinc: true });
+          setEncuestasReales((prev) =>
+            prev.map((e) =>
+              e.id === enc.id ? { ...e, estado_sinc: true } : e,
+            ),
+          );
+
+          exitosas++;
+        }
+      } catch {}
+    }
+  };
+
+  useEffect(() => {
+    if (navigator.onLine) {
+      sincronizarEncuestas();
+    }
+
+    window.addEventListener("online", sincronizarEncuestas);
+
+    return () => {
+      window.removeEventListener("online", sincronizarEncuestas);
+    };
+  }, [encuestasReales]);
+
   return (
     <div className="flex flex-col min-h-screen p-6 gap-6">
       <p className="text-2xl">

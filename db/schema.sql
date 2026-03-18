@@ -6,7 +6,7 @@ USE encuesta_alfabetismo;
 
 CREATE TABLE IF NOT EXISTS usuarios (
   id               INT AUTO_INCREMENT PRIMARY KEY,
-  nombre_completo  VARCHAR(255) NOT NULL,
+  nombre_completo  VARCHAR(255),
   usuario_slug     VARCHAR(100) UNIQUE NOT NULL,
   activo           BOOLEAN DEFAULT TRUE,
   creado_en        DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -34,3 +34,15 @@ CREATE TABLE IF NOT EXISTS encuestas (
   creado_en         DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (entrevistador_id) REFERENCES usuarios(id)
 );
+
+
+
+USE encuesta_alfabetismo;
+
+
+ALTER TABLE usuarios MODIFY nombre_completo VARCHAR(255) NULL;
+
+INSERT INTO usuarios (id, nombre_completo, usuario_slug) VALUES 
+(1, 'Juan Pérez', 'juanP'),
+(2, 'María López', 'mariaL'),
+(3, 'Carlos Ruiz', 'carlosR');
