@@ -1,6 +1,23 @@
 "use client";
 import { useState, useEffect } from "react";
 import { db } from "../../lib/client/db";
+import { Montserrat } from "next/font/google";
+import {
+  LogOut,
+  PlusCircle,
+  CheckCircle2,
+  Clock,
+  MapPin,
+  Trash2,
+  Menu,
+  User,
+  NotebookPen,
+} from "lucide-react";
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "600", "800"],
+});
 
 type Props = {
   onNuevaEncuesta: () => void;
@@ -24,6 +41,7 @@ export default function Dashboard({
 
   //se muestra el total de encuestas guardadas
   const [totalEncuestas, setTotalEncuestas] = useState(0);
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   //funcion que se activa junto al dashboard
   useEffect(() => {
@@ -134,21 +152,58 @@ export default function Dashboard({
   }, [encuestasReales]);
 
   return (
-    <div className="flex flex-col min-h-screen p-6 gap-6">
-      <p className="text-2xl">
-        Bienvenido, <strong>{nombreEntrevistador}</strong>
-      </p>
-      <button
-        onClick={onCerrarSesion}
-        className="text-red-500 text-sm underline"
-      >
-        Cerrar Sesión
-      </button>
-      {/*titulo de la seccion con total real*/}
-      <h1 className="text-3xl font-bold">
+    <div className="flex flex-col min-h-screen bg-white">
+      {/* 1. BARRA SUPERIOR (Solo el Menú Dropdown) */}
+      <div className="flex items-center px-4 pt-5 relative z-50 mb-3">
+        <div className="relative">
+          {/* Botón de Menú (Hamburguesa) */}
+          <button
+            onClick={() => setMenuAbierto(!menuAbierto)}
+            className="p-2 -ml-2 rounded-xl active:bg-gray-100 transition-colors "
+          >
+            <Menu className="w-8 h-8 text-slate-800" />
+          </button>
+
+          {/* DROPDOWN: Se despliega al hacer click */}
+          {menuAbierto && (
+            <div className="absolute left-0 mt-3 w-56 bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 rounded-2xl overflow-hidden py-2">
+              <button
+                onClick={onCerrarSesion}
+                className="w-full flex items-center gap-3 px-5 py-4 text-red-600 font-bold hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="text-sm uppercase tracking-wider">
+                  Cerrar Sesión
+                </span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 2. ZONA DEL TÍTULO (Alineado en una sola línea) */}
+      <div className="flex flex-col px-6 pt-6 mb-20">
+        <h1
+          className={`${montserrat.className} text-[30px] text-slate-900 font-extrabold 
+          tracking-tighter uppercase leading-none`}
+        >
+          Bienvenido,{" "}
+          <span className="text-red-600 font-extrabold">
+            {nombreEntrevistador}!
+          </span>
+        </h1>
+        {/* Línea decorativa opcional para dar estilo Fintech */}
+        <div className="h-1 w-40 bg-green-700 mt-3 rounded-full" />
+      </div>
+
+      {/* ----------- AQUÍ ABAJO SIGUE INTACTO TU TEXTO DE Encuestas Realizadas --------------------- */}
+
+      <h1 className="px-7 text-2xl pb-10 font-bold flex items-center gap-3">
+        <NotebookPen className="w-7 h-7 text-black" />
         Encuestas Realizadas
         <span className="text-gray-400 text-xl"> ({totalEncuestas}) </span>
       </h1>
+
       {/*scroll horizontal*/}
       <div className="flex gap-4 overflow-x-auto pb-2">
         {encuestasReales.length === 0 ? (
