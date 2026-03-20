@@ -12,6 +12,8 @@ import {
   Menu,
   User,
   NotebookPen,
+  Hash,
+  AlertCircle,
 } from "lucide-react";
 
 const montserrat = Montserrat({
@@ -196,7 +198,7 @@ export default function Dashboard({
         <div className="h-1 w-40 bg-green-700 mt-3 rounded-full" />
       </div>
 
-      {/* ----------- AQUÍ ABAJO SIGUE INTACTO TU TEXTO DE Encuestas Realizadas --------------------- */}
+      {/* -----------  TEXTO DE Encuestas Realizadas --------------------- */}
 
       <h1 className="px-7 text-2xl pb-10 font-bold flex items-center gap-3">
         <NotebookPen className="w-7 h-7 text-black" />
@@ -204,54 +206,93 @@ export default function Dashboard({
         <span className="text-gray-400 text-xl"> ({totalEncuestas}) </span>
       </h1>
 
-      {/*scroll horizontal*/}
-      <div className="flex gap-4 overflow-x-auto pb-2">
+      {/*----------------------------------------cards contenedor de encuestas------------------------------*/}
+      <div className="flex-1 overflow-y-auto px-6 pb-6 flex-col gap-5">
         {encuestasReales.length === 0 ? (
-          <p className="text-gray-400 italic">
-            {" "}
+          <p className="text-gray-400 italic text-center mt-10">
             Aún no hay encuestas realizadas
           </p>
         ) : (
           encuestasReales.map((enc) => (
             <div
               key={enc.folio}
-              className="min-w-[220px] border border-gray-200 rounded-xl p-4 flex flex-col gap-2 shadow-sm bg-white"
+              className="bg-[#FF4D58] rounded-4xl p-6 flex flex-col shadow-xl shadow-red-200/50
+          text-white relative"
             >
-              <p className="text-lg font-bold truncate">{enc.folio}</p>
-              <p className="text-base text-gray-700 font-medium truncate">
-                {enc.nombreEncuestado}
+              {/* --- INICIO DEL ENCABEZADO DE TARJETA --- */}
+              <div className="flex justify-between items-start mb-2">
+                {/* Izquierda: Usuario y Nombre */}
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-full">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <h2
+                    className={`text-lg font-bold tracking-tighter truncate text-white ${montserrat.className}`}
+                  >
+                    {enc.nombreEncuestado}
+                  </h2>
+                </div>
+
+                {/* Derecha: Ícono Exclamación / Palomita */}
+                <div className="pt-1">
+                  {enc.estado_sinc ? (
+                    <CheckCircle2 className="w-7 h-7 stroke-[3px] text-green-300 drop-shadow-md" />
+                  ) : (
+                    <AlertCircle
+                      className="w-7 h-7 stroke-[3px] text-yellow-300 drop-shadow-md animate-pulse"
+                      style={{
+                        animationDuration: "4s",
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+              {/* --- FIN DEL ENCABEZADO DE TARJETA --- */}
+
+              <p className="flex items-center gap-3 text-white/90 text-lg font-bold mb-1 tracking-wider">
+                <Hash className="w-6 h-6 text-white shrink-0" />
+                Folio: {enc.folio}
               </p>
-              <p className="text-sm text-gray-400">
-                {new Date(enc.fechaHora).toLocaleDateString("es-MX", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
-              <p className="text-sm text-gray-400 truncate">
-                {enc.lugar ||
-                  (enc.ubicacion.lat === 0
-                    ? "Sin ubicación"
-                    : `${enc.ubicacion.lat.toFixed(4)}, ${enc.ubicacion.lng.toFixed(4)}`)}
-              </p>
-              {/* status: verde si sincronizada, naranja si pendiente */}
-              <span
-                className={`text-sm font-bold mt-2 ${enc.estado_sinc ? "text-green-500" : "text-orange-500"}`}
-              >
-                {enc.estado_sinc ? "✅ Sincronizada" : "🟠 Pendiente"}
-              </span>
-              <button
-                onClick={() => borrarEncuesta(enc.id)}
-                className="text-red-400 text-sm underline mt-1"
-              >
-                Borrar
-              </button>
+
+              <div className="flex flex-col gap-3">
+                <div className="flex item-center gap-3 text-white font-semibold text-lg">
+                  <Clock className="w-6 h-6 fill-white text-[#FA5B5B]" />
+                  {new Date(enc.fechaHora).toLocaleString("es-MX", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+
+                <div className="flex items-center gap-3 text-white font-semibold text-lg w-10/12">
+                  <MapPin className="w-6 h-6 fill-white text-[#FA5B5B] shrink-0" />
+                  <span className="truncate leading-tight">
+                    Lugar:{" "}
+                    {enc.lugar ||
+                      (enc.ubicacion.lat === 0
+                        ? "Ubicación no disponible"
+                        : "coordenas GPS")}
+                  </span>
+                </div>
+              </div>
+              {/* === BOTÓN FLOTANTE ESQUINA INFERIOR DERECHA === */}
+              <div className="absolute bottom-6 right-6">
+                <button
+                  onClick={() => borrarEncuesta(enc.id)}
+                  className="bg-white/20 p-3 rounded-full hover:bg-white/40 hover:scale-105 transition-all text-white shadow-xl"
+                  title="Eliminar Encuesta"
+                >
+                  <Trash2 className="w-6 h-6" />
+                </button>
+              </div>
+              {/* ============================================== */}
             </div>
           ))
         )}
       </div>
+
       {/* botón principal, mt-auto lo empuja hasta abajo */}
       <button
         className="bg-black text-white text-2xl rounded-xl p-6 w-full mt-auto mb-4 font-bold shadow-lg"
