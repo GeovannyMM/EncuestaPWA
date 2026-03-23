@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { db } from "../../lib/client/db";
 import { Montserrat } from "next/font/google";
+import Image from "next/image";
 import {
   LogOut,
   PlusCircle,
@@ -154,19 +155,17 @@ export default function Dashboard({
   }, [encuestasReales]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      {/* 1. BARRA SUPERIOR (Solo el Menú Dropdown) */}
-      <div className="flex items-center px-4 pt-5 relative z-50 mb-3">
+    <div className="flex flex-col h-[100dvh] overflow-hidden bg-white relative">
+      {/* 1. BARRA SUPERIOR (Menú Dropdown IZQUIERDA | Logo DERECHA) */}
+      <div className="flex items-center justify-between px-4 pt-5 relative z-50 mb-3">
+        {/* === LADO IZQUIERDO: MENÚ HAMBURGUESA === */}
         <div className="relative">
-          {/* Botón de Menú (Hamburguesa) */}
           <button
             onClick={() => setMenuAbierto(!menuAbierto)}
             className="p-2 -ml-2 rounded-xl active:bg-gray-100 transition-colors "
           >
             <Menu className="w-8 h-8 text-slate-800" />
           </button>
-
-          {/* DROPDOWN: Se despliega al hacer click */}
           {menuAbierto && (
             <div className="absolute left-0 mt-3 w-56 bg-white shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 rounded-2xl overflow-hidden py-2">
               <button
@@ -181,10 +180,23 @@ export default function Dashboard({
             </div>
           )}
         </div>
+        {/* === FIN LADO IZQUIERDO === */}
+        {/* === LADO DERECHO: LOGO CORREGIDO === */}
+        <div className="pr-1 pt-3 pb-3">
+          <Image
+            src="/corazonchiapas.png"
+            alt="Logo Chiapas Puede"
+            width={80}
+            height={20}
+            className="object-contain"
+            priority
+          />
+        </div>
+        {/* === FIN LADO DERECHO === */}
       </div>
 
-      {/* 2. ZONA DEL TÍTULO (Alineado en una sola línea) */}
-      <div className="flex flex-col px-6 pt-6 mb-20">
+      {/* ZONA DEL TÍTULO (Alineado en una sola línea) */}
+      <div className="flex flex-col px-6 pt-6 mb-13">
         <h1
           className={`${montserrat.className} text-[30px] text-slate-900 font-extrabold 
           tracking-tighter uppercase leading-none`}
@@ -200,14 +212,18 @@ export default function Dashboard({
 
       {/* -----------  TEXTO DE Encuestas Realizadas --------------------- */}
 
-      <h1 className="px-7 text-2xl pb-10 font-bold flex items-center gap-3">
-        <NotebookPen className="w-7 h-7 text-black" />
-        Encuestas Realizadas
-        <span className="text-gray-400 text-xl"> ({totalEncuestas}) </span>
-      </h1>
-
+      <div className="px-7 pb-6 flex items-center justify-between">
+        <h1 className="text-[25px] font-extrabold flex items-center gap-3 text-slate-900 tracking-tight">
+          <NotebookPen className="w-8 h-8 text-black opacity-80" />
+          Encuestas Realizadas
+        </h1>
+        {/* El contador se va elegante a la derecha */}
+        <div className="bg-gray-100 text-gray-500 font-extrabold px-4 py-1.5 rounded-2xl text-lg border border-gray-200 shadow-sm">
+          {totalEncuestas}
+        </div>
+      </div>
       {/*----------------------------------------cards contenedor de encuestas------------------------------*/}
-      <div className="flex-1 overflow-y-auto px-6 pb-6 flex-col gap-5">
+      <div className="flex-1 overflow-y-auto px-6 pb-6 flex flex-col gap-6">
         {encuestasReales.length === 0 ? (
           <p className="text-gray-400 italic text-center mt-10">
             Aún no hay encuestas realizadas
@@ -216,14 +232,14 @@ export default function Dashboard({
           encuestasReales.map((enc) => (
             <div
               key={enc.folio}
-              className="bg-[#FF4D58] rounded-4xl p-6 flex flex-col shadow-xl shadow-red-200/50
+              className="bg-[#FF4D58] rounded-2xl p-6 flex flex-col shadow-xl shadow-red-200/50
           text-white relative"
             >
               {/* --- INICIO DEL ENCABEZADO DE TARJETA --- */}
-              <div className="flex justify-between items-start mb-2">
+              <div className="flex justify-between items-center mb-3 gap-4">
                 {/* Izquierda: Usuario y Nombre */}
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-2 rounded-full">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="bg-white/20 p-2 rounded-full shrink-0">
                     <User className="w-5 h-5 text-white" />
                   </div>
                   <h2
@@ -233,8 +249,8 @@ export default function Dashboard({
                   </h2>
                 </div>
 
-                {/* Derecha: Ícono Exclamación / Palomita */}
-                <div className="pt-1">
+                {/* Derecha: Ícono Exclamación / check */}
+                <div className="shrink-0">
                   {enc.estado_sinc ? (
                     <CheckCircle2 className="w-7 h-7 stroke-[3px] text-green-300 drop-shadow-md" />
                   ) : (
@@ -293,13 +309,18 @@ export default function Dashboard({
         )}
       </div>
 
-      {/* botón principal, mt-auto lo empuja hasta abajo */}
-      <button
-        className="bg-black text-white text-2xl rounded-xl p-6 w-full mt-auto mb-4 font-bold shadow-lg"
-        onClick={onNuevaEncuesta}
-      >
-        Nueva Encuesta +
-      </button>
+      {/* === CONTENEDOR DEL BOTÓN PRINCIPAL === */}
+      <div className="px-6 py-6 mt-auto bg-gradient-to-t from-white via-white to-transparent">
+        <button
+          className="group bg-red-800 text-white text-2xl rounded-xl py-6 w-full font-bold shadow-2xl 
+          shadow-red-900/30 hover:bg-black active:scale-90 active:bg-red-900 
+          transition-all duration-300 ease-out flex justify-center items-center gap-3"
+          onClick={onNuevaEncuesta}
+        >
+          <PlusCircle className="w-7 h-7 transition-transform duration-300 group-active:rotate-45 group-hover:scale-110" />
+          Nueva Encuesta
+        </button>
+      </div>
     </div>
   );
 }

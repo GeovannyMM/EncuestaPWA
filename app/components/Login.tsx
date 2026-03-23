@@ -67,7 +67,7 @@ export default function Login({ onLogin }: Props) {
       // 1. Buscador Dexie (Offline)
       const usuarioEncontrado = await db.usuarios
         .where("usuario_slug")
-        .equals(usuario.trim())
+        .equalsIgnoreCase(usuario.trim())
         .first();
 
       if (usuarioEncontrado) {
