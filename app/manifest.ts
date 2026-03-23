@@ -8,10 +8,10 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     display: "standalone", // Esto es clave: "standalone" le dice al celular que se comporte como aplicación nativa, ocultando la barra del navegador.
     background_color: "#ffffff",
-    theme_color: "#ef4444", // Usamos el rojo (red-500) que tienes en tus botones como color de tema (la barra de arriba del celular).
+    theme_color: "#ef4444", 
     icons: [
       {
-        src: "/window.svg", // Temporal. Usaremos uno de tus iconos svg predeterminados.
+        src: "/window.svg", // Temporal. de momento iconos svg predeterminados.
         sizes: "192x192",
         type: "image/svg+xml",
       },

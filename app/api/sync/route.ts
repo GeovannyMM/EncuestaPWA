@@ -8,9 +8,9 @@ export async function POST(req: NextRequest) {
     await pool.execute(
       `INSERT IGNORE INTO encuestas 
         (folio, entrevistador_id, nombre_encuestado, nombre, apellido_paterno, 
-         apellido_materno, edad, fecha_hora, lat, lng, lugar,
+         apellido_materno, edad, sexo, fecha_hora, lat, lng, lugar,
          p1, p2, p2cual, p3, p3lengua, p4, p4escrito, p5, p6, p6cuantos)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         encuesta.folio,
         encuesta.entrevistador,
@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
         encuesta.apellidoPaterno,
         encuesta.apellidoMaterno,
         encuesta.edad,
+        encuesta.sexo,
         encuesta.fechaHora.slice(0, 19).replace("T", " "),
         encuesta.ubicacion?.lat ?? null,
         encuesta.ubicacion?.lng ?? null,

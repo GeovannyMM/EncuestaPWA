@@ -155,7 +155,7 @@ export default function Dashboard({
   }, [encuestasReales]);
 
   return (
-    <div className="flex flex-col h-[100dvh] overflow-hidden bg-white relative">
+    <div className="flex flex-col h-dvh overflow-hidden bg-white relative">
       {/* 1. BARRA SUPERIOR (Menú Dropdown IZQUIERDA | Logo DERECHA) */}
       <div className="flex items-center justify-between px-4 pt-5 relative z-50 mb-3">
         {/* === LADO IZQUIERDO: MENÚ HAMBURGUESA === */}
@@ -310,7 +310,7 @@ export default function Dashboard({
       </div>
 
       {/* === CONTENEDOR DEL BOTÓN PRINCIPAL === */}
-      <div className="px-6 py-6 mt-auto bg-gradient-to-t from-white via-white to-transparent">
+      <div className="px-6 py-6 mt-auto bg-linear-to-t from-white via-white to-transparent">
         <button
           className="group bg-red-800 text-white text-2xl rounded-xl py-6 w-full font-bold shadow-2xl 
           shadow-red-900/30 hover:bg-black active:scale-90 active:bg-red-900 

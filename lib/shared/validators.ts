@@ -16,6 +16,7 @@ export const encuestaSchema = z.object({
   apellidoPaterno: z.string().min(2),
   apellidoMaterno: z.string().min(2),
   edad: z.string(),
+  sexo: z.string(),
   ubicacion: z
     .object({
       lat: z.number(),

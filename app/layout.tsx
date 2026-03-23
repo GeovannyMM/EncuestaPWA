@@ -12,11 +12,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// 1. Aquí conectamos nuestra PWA con el navegador
+// 1. conección de la PWA con el navegador
 export const metadata: Metadata = {
   title: "Encuesta Alfabetismo",
   description: "PWA Offline para encuestas en campo",
-  manifest: "/manifest.json", // Le decimos a Next que busque el manifest que creamos
+  manifest: "/manifest.json",
 };
 
 // 2. Fundamental para que no se vea la "pantalla negra o plana" en celulares
@@ -24,7 +24,7 @@ export const viewport: Viewport = {
   themeColor: "#ef4444",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1, // Evita que al hacer doble tap, la app haga zoom (daña la experiencia de app nativa)
+  maximumScale: 1,
 };
 
 export default function RootLayout({

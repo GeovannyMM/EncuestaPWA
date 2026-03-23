@@ -2,6 +2,15 @@
 import { useState, useEffect } from "react";
 import { db } from "../../lib/client/db";
 import { generarFolio } from "../../lib/shared/utils";
+import {
+  User,
+  FileUser,
+  Hash,
+  MapPin,
+  ChevronDown,
+  X,
+  ArrowRight,
+} from "lucide-react";
 
 type Props = {
   onTerminar: () => void;
@@ -37,13 +46,20 @@ export default function Survey({
   const [apellidoPaterno, setApellidoPaterno] = useState("");
   const [apellidoMaterno, setApellidoMaterno] = useState("");
   const [edad, setEdad] = useState("");
+  const [sexo, setSexo] = useState("");
   const [p4escrito, setP4escrito] = useState("");
   const [p5, setP5] = useState("");
   const [p6, setP6] = useState("");
   const [p6cuantos, setP6cuantos] = useState("");
 
-  // pide la ubicación al navegador, espera y avisa si tuvo exito
+  const handleEdadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setEdad(value);
+    }
+  };
 
+  // pide la ubicación al navegador, espera y avisa si tuvo exito
   const capturarGPS = (): Promise<boolean> => {
     return new Promise((resolve) => {
       setErrorGPS("");
@@ -94,7 +110,8 @@ export default function Survey({
       !nombre.trim() ||
       !apellidoPaterno.trim() ||
       !apellidoMaterno.trim() ||
-      !edad.trim()
+      !edad.trim() ||
+      !sexo
     ) {
       alert("Por favor, ingresa los datos del encuestado para comenzar.");
       return;
@@ -127,6 +144,7 @@ export default function Survey({
         apellidoPaterno,
         apellidoMaterno,
         edad,
+        sexo,
         fechaHora: new Date().toISOString(), //hora del dispositivo
         ubicacion: {
           lat: lat || 0,
@@ -189,21 +207,44 @@ export default function Survey({
 
   if (etapa === "datos_iniciales") {
     return (
-      <div className="flex flex-col p-6 gap-8 pb-32 min-h-screen justify-center items-center">
-        <div className="w-full max-w-sm flex flex-col gap-6 bg-white p-8 rounded-2xl shadow-lg border">
-          <h1 className="text-gray-500 text-3xl font-bold text-center">
+      <div className="flex flex-col p-6 pt-20 bg-linear-to-b from-red-600 to-red-900 gap-8 pb-32 min-h-screen justify-center items-center">
+        <div className="relative w-full max-w-sm flex flex-col gap-6 bg-white p-8 rounded-2xl shadow-lg border">
+          <h1
+            className="text-transparent bg-linear-to-r from-red-800 to-red-600 
+          bg-clip-text text-4xl font-black text-center pt-3"
+          >
             Nueva Encuesta
           </h1>
-          <p className="text-xl text-gray-500 text-center">
-            Datos del encuestado
-          </p>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xl font-bold">
-              Nombre(s):
-            </label>
+          {!cargandoGPS && (
+            <button
+              onClick={onCancelar}
+              className="absolute font-bold top-3 right-3 p-2 text-gray-600 hover:text-red-500 hover:bg-red-50 
+              rounded-full transition-all active:scale-90 shadow-sm border border-transparent 
+              hover:border-red-100"
+              title="Cancelar encuesta"
+            >
+              <X className="w-4 h-4 stroke-[3px]" />
+            </button>
+          )}
+          <div className="relative flex items-center justify-center w-full">
+            <div className="absolute left-0 pl flex items-center pointer-events-none">
+              <FileUser className="h-6 w-6 text-gray-500" />
+            </div>
+            <p className="text-2xl text-gray-500 font-bold">
+              Datos del encuestado
+            </p>
+          </div>
+
+          {/* === CAMPO: NOMBRE === */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <User className="h-6 w-6 text-gray-400" />
+            </div>
             <input
-              className="border-gray-400 p-4 text-2xl rounded text-gray-500"
+              className="w-full pl-12 pr-4 py-4 text-xl font-bold rounded-xl bg-gray-100 border 
+              border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-700 
+              transition-all outline-none"
               placeholder="Nombre(s)"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
@@ -211,41 +252,82 @@ export default function Survey({
             />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xl font-bold">
-              Apellido Paterno:
-            </label>
+          {/* === 2. CAMPO: APELLIDO PATERNO === */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <User className="h-6 w-6 text-gray-400 opacity-60" />
+            </div>
             <input
-              className="border-gray-400 p-4 text-2xl rounded text-gray-500"
+              className="w-full pl-12 pr-4 py-4 text-xl font-bold rounded-xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-700 transition-all outline-none"
               placeholder="Apellido Paterno"
               value={apellidoPaterno}
               onChange={(e) => setApellidoPaterno(e.target.value)}
               disabled={cargandoGPS}
             />
           </div>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xl font-bold">
-              Apellido Materno:
-            </label>
+          {/* === 3. CAMPO: APELLIDO MATERNO === */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <User className="h-6 w-6 text-gray-400 opacity-60" />
+            </div>
             <input
-              className="border-gray-400 p-4 text-2xl rounded text-gray-500"
+              className="w-full pl-12 pr-4 py-4 text-xl font-bold rounded-xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-700 transition-all outline-none"
               placeholder="Apellido Materno"
               value={apellidoMaterno}
               onChange={(e) => setApellidoMaterno(e.target.value)}
               disabled={cargandoGPS}
             />
           </div>
+          {/* === 4. CAMPO: EDAD === */}
+          <div className="flex gap-4">
+            {/* 4a. EDAD (50% de ancho ancho "w-1/2") */}
+            <div className="relative w-1/2">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Hash className="h-6 w-6 text-gray-400" />
+              </div>
+              <input
+                type="number"
+                className="w-full pl-12 pr-4 py-4 text-xl font-bold rounded-xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-700 transition-all outline-none"
+                placeholder="Edad"
+                min={1}
+                max={120}
+                value={edad}
+                onChange={handleEdadChange}
+                onKeyDown={(e) => {
+                  if (["e", "E", "-", ".", "+"].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                disabled={cargandoGPS}
+              />
+            </div>
+            {/* 4b. SEXO (Dropdown) (50% de ancho "w-1/2") */}
+            <div className="relative w-1/2">
+              <select
+                className={`w-full px-4 py-4 text-xl font-bold rounded-xl bg-gray-100 border border-transparent transition-all outline-none focus:bg-white focus:border-red-700 appearance-none cursor-pointer ${
+                  sexo === "" ? "text-gray-400" : "text-gray-700"
+                }`}
+                value={sexo}
+                onChange={(e) => setSexo(e.target.value)}
+                disabled={cargandoGPS}
+              >
+                {/* Opción fantasma de placeholder */}
+                <option value="" disabled hidden>
+                  Sexo
+                </option>
+                <option value="H" className="text-gray-700">
+                  Masculino
+                </option>
+                <option value="M" className="text-gray-700">
+                  Femenino
+                </option>
+              </select>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xl font-bold">Edad:</label>
-            <input
-              className="border-gray-400 p-4 text-2xl rounded text-gray-500"
-              placeholder="Edad"
-              value={edad}
-              onChange={(e) => setEdad(e.target.value)}
-              disabled={cargandoGPS}
-            />
+              {/* Ícono de flechita nativa para que se vea premium */}
+              <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                <ChevronDown className="h-6 w-6 text-gray-400" />
+              </div>
+            </div>
           </div>
 
           {errorGPS && (
@@ -255,98 +337,180 @@ export default function Survey({
           )}
 
           <button
-            className={`${cargandoGPS ? "opacity-50 cursor-not-allowed" : ""}  bg-red-500 text-white text-2xl rounded-xl 
-            p-6 min-h-[80px] w-full mt-4 font-bold transition-all`}
+            className={`relative flex items-center justify-center gap-1 ${
+              cargandoGPS
+                ? "opacity-90 cursor-not-allowed"
+                : "hover:scale-[1.02] hover:shadow-lg active:scale-95 hover:bg-red-700"
+            } bg-red-600 text-white text-xl rounded-2xl p-6 min-h-[80px] w-full mt-4 font-bold transition-all shadow-md`}
             onClick={handleComenzar}
             disabled={cargandoGPS}
           >
-            {cargandoGPS
-              ? "Obteniendo ubicación..."
-              : errorGPS
-                ? "Intentar de nuevo"
-                : "Comenzar Cuestionario"}
+            {cargandoGPS ? (
+              <>
+                {/* Ícono anclado a la pared izquierda (ya no empuja al texto) */}
+                <div className="absolute left-6">
+                  <MapPin className="w-7 h-7 animate-bounce" />
+                </div>
+
+                {/* Texto centrado con los 3 puntitos que prenden y apagan en secuencia */}
+                <div className="text-xl flex tracking-wide">
+                  Obteniendo ubicación
+                  <span
+                    className="animate-pulse"
+                    style={{ animationDelay: "0ms" }}
+                  >
+                    .
+                  </span>
+                  <span
+                    className="animate-pulse"
+                    style={{ animationDelay: "300ms" }}
+                  >
+                    .
+                  </span>
+                  <span
+                    className="animate-pulse"
+                    style={{ animationDelay: "600ms" }}
+                  >
+                    .
+                  </span>
+                </div>
+              </>
+            ) : errorGPS ? (
+              <>
+                <X className="w-7 h-7" />
+                Intentar de nuevo
+              </>
+            ) : (
+              <span className="flex items-center gap-1">
+                Comenzar Cuestionario
+                <ArrowRight className="w-7 h-7 stroke-[3px]" />
+              </span>
+            )}
           </button>
-          {!cargandoGPS && (
-            <button
-              className="bg-gray-400 text-taupe-950 text-xl rounded-xl p-4 w-full mt-2 font-bold"
-              onClick={onCancelar}
-            >
-              Cancelar y regresar
-            </button>
-          )}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col p-6 gap-8 pb-32">
-      <h1 className="text-3xl font-bold">Cuestionario</h1>
+    <div className="flex flex-col px-3 py-6  gap-8 pb-32 bg-gray-50 min-h-screen">
+      <h1
+        className="text-5xl font-black text-transparent pl-3 bg-linear-to-r from-red-800 to-red-600 
+          bg-clip-text pt-5 pb-2"
+      >
+        Cuestionario
+      </h1>
 
       {/* PREGUNTA 1 */}
-      <div className="flex flex-col gap-3">
-        <p className="text-2xl">
+      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+        {/* Texto limpio y oscuro */}
+        <p className="text-xl font-bold text-gray-700 leading-snug">
           1. ¿En los últimos años ha recibido algún programa de alfabetización?
         </p>
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-2xl">
+
+        {/* Reemplazamos los Radios Redondos por Cajas Anchas Mate */}
+        <div className="flex gap-4">
+          {/* BOTÓN SÍ */}
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p1 === "si"
+                ? "bg-red-50 border-red-500 text-red-600" // Brillará si lo seleccionan
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200" // Apagado mate
+            }`}
+          >
             <input
               type="radio"
               name="p1"
               value="si"
+              className="hidden" // <--- radio button cambio
               onChange={(e) => setP1(e.target.value)}
-            />{" "}
+            />
             Sí
           </label>
-          <label className="flex items-center gap-2 text-2xl">
+          {/* BOTÓN NO */}
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p1 === "no"
+                ? "bg-red-50 border-red-500 text-red-600"
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+            }`}
+          >
             <input
               type="radio"
               name="p1"
               value="no"
+              className="hidden" // Ocultamos la bolita de Radio
               onChange={(e) => setP1(e.target.value)}
-            />{" "}
+            />
             No
           </label>
         </div>
       </div>
-
       {/* PREGUNTA 2 */}
-      <div className="flex flex-col gap-3">
-        <p className="text-2xl">
+      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+        <p className="text-xl font-bold text-gray-700 leading-snug">
           2. ¿Ha recibido apoyo económico de algún programa de alfabetización?
         </p>
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-2xl">
+        {/* BOTONES SÍ / NO */}
+        <div className="flex gap-4">
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p2 === "si"
+                ? "bg-red-50 border-red-500 text-red-600"
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+            }`}
+          >
             <input
               type="radio"
               name="p2"
               value="si"
+              className="hidden"
               onChange={(e) => setP2(e.target.value)}
-            />{" "}
+            />
             Sí
           </label>
-          <label className="flex items-center gap-2 text-2xl">
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p2 === "no"
+                ? "bg-red-50 border-red-500 text-red-600"
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+            }`}
+          >
             <input
               type="radio"
               name="p2"
               value="no"
+              className="hidden"
               onChange={(e) => setP2(e.target.value)}
-            />{" "}
+            />
             No
           </label>
         </div>
+        {/* SUB-PREGUNTA DINÁMICA (Solo sale si opres SÍ) */}
         {p2 === "si" && (
-          <div className="flex flex-col gap-2 mt-2">
-            <p className="text-xl">Si la respuesta es sí, ¿cuál?</p>
-            <div className="flex gap-4 flex-wrap">
+          <div className="flex flex-col gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
+            <p className="text-lg font-bold text-gray-600 text-center">
+              ¿De qué programa?
+            </p>
+
+            {/* Opciones en lista vertical tipo examen para leerlas bien */}
+            <div className="flex flex-col gap-3">
               {["INEA", "Chiapas Puede", "Otro"].map((op) => (
-                <label key={op} className="flex items-center gap-2 text-xl">
+                <label
+                  key={op}
+                  className={`rounded-xl p-4 text-center text-lg font-bold cursor-pointer transition-all border-2 ${
+                    p2cual === op
+                      ? "bg-red-50 border-red-500 text-red-600"
+                      : "bg-white border-gray-200 text-gray-500 hover:bg-gray-100"
+                  }`}
+                >
                   <input
                     type="radio"
                     name="p2cual"
                     value={op}
+                    className="hidden"
                     onChange={(e) => setP2cual(e.target.value)}
-                  />{" "}
+                  />
                   {op}
                 </label>
               ))}
@@ -355,43 +519,69 @@ export default function Survey({
         )}
       </div>
 
-      {/* PREGUNTA 3 */}
-      <div className="flex flex-col gap-3">
-        <p className="text-2xl">3. ¿Sabe leer?</p>
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-2xl">
+      {/*------------ PREGUNTA 3 ------------*/}
+      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+        <p className="text-xl font-bold text-gray-700 leading-snug">
+          3. ¿Sabe leer?
+        </p>
+        {/* BOTONES SÍ / NO */}
+        <div className="flex gap-4">
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p3 === "si"
+                ? "bg-red-50 border-red-500 text-red-600"
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+            }`}
+          >
             <input
               type="radio"
               name="p3"
               value="si"
+              className="hidden"
               onChange={(e) => setP3(e.target.value)}
-            />{" "}
+            />
             Sí
           </label>
-          <label className="flex items-center gap-2 text-2xl">
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p3 === "no"
+                ? "bg-red-50 border-red-500 text-red-600"
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+            }`}
+          >
             <input
               type="radio"
               name="p3"
               value="no"
+              className="hidden"
               onChange={(e) => setP3(e.target.value)}
-            />{" "}
+            />
             No
           </label>
         </div>
+        {/* SUB-PREGUNTA DINÁMICA (Solo sale si es SÍ) */}
         {p3 === "si" && (
-          <div className="flex flex-col gap-2 mt-2">
-            <p className="text-xl">
-              Si la respuesta es sí, especifique en qué lengua
+          <div className="flex flex-col gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
+            <p className="text-lg font-bold text-gray-600 text-center">
+              ¿En qué lengua?
             </p>
-            <div className="flex gap-4 flex-wrap">
+            <div className="flex flex-col gap-3">
               {["Español", "Tseltal", "Tsotsil", "Otro"].map((op) => (
-                <label key={op} className="flex items-center gap-2 text-xl">
+                <label
+                  key={op}
+                  className={`rounded-xl p-4 text-center text-lg font-bold cursor-pointer transition-all border-2 ${
+                    p3lengua === op
+                      ? "bg-red-50 border-red-500 text-red-600"
+                      : "bg-white border-gray-200 text-gray-500 hover:bg-gray-100"
+                  }`}
+                >
                   <input
                     type="radio"
                     name="p3lengua"
                     value={op}
+                    className="hidden"
                     onChange={(e) => setP3lengua(e.target.value)}
-                  />{" "}
+                  />
                   {op}
                 </label>
               ))}
@@ -400,90 +590,142 @@ export default function Survey({
         )}
       </div>
 
-      {/* PREGUNTA 4 */}
-      <div className="flex flex-col gap-3">
-        <p className="text-2xl">4. ¿Sabe escribir?</p>
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-2xl">
+      {/*------------ PREGUNTA 4 ------------*/}
+      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+        <p className="text-xl font-bold text-gray-700 leading-snug">
+          4. ¿Sabe escribir?
+        </p>
+        {/* BOTONES SÍ / NO */}
+        <div className="flex gap-4">
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p4 === "si"
+                ? "bg-red-50 border-red-500 text-red-600"
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+            }`}
+          >
             <input
               type="radio"
               name="p4"
               value="si"
+              className="hidden"
               onChange={(e) => setP4(e.target.value)}
-            />{" "}
+            />
             Sí
           </label>
-          <label className="flex items-center gap-2 text-2xl">
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p4 === "no"
+                ? "bg-red-50 border-red-500 text-red-600"
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+            }`}
+          >
             <input
               type="radio"
               name="p4"
               value="no"
+              className="hidden"
               onChange={(e) => setP4(e.target.value)}
-            />{" "}
+            />
             No
           </label>
         </div>
-
+        {/* CAJA DE TEXTO DINÁMICA (Solo sale si es SÍ) */}
         {p4 === "si" && (
-          <input
-            className="border p-4 text-2xl rounded mt-2"
-            placeholder="Escribe tu nombre y edad"
-            value={p4escrito}
-            onChange={(e) => setP4escrito(e.target.value)}
-          />
+          <div className="flex flex-col gap-3 mt-1">
+            <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
+              Prueba de escritura
+            </p>
+            <input
+              className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 
+              border border-transparent text-gray-700 placeholder-gray-400 
+              focus:bg-white focus:border-red-400 transition-all outline-none"
+              placeholder="Escriba su nombre y edad..."
+              value={p4escrito}
+              onChange={(e) => setP4escrito(e.target.value)}
+            />
+          </div>
         )}
       </div>
 
-      {/* PREGUNTA 5 */}
-      <div className="flex flex-col gap-3">
-        <p className="text-2xl">5. Escriba las vocales</p>
-        <input
-          className="border p-4 text-2xl rounded"
-          placeholder="Vocales"
-          value={p5}
-          onChange={(e) => setP5(e.target.value)}
-        />
+      {/* ---------- PREGUNTA 5 ---------- */}
+      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+        <p className="text-xl font-bold text-gray-700 leading-snug">
+          5. Escriba las vocales
+        </p>
+        <div className="flex flex-col gap-3">
+          <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
+            Prueba de vocales
+          </p>
+          <input
+            className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-400 transition-all outline-none"
+            placeholder="A, E, I, O, U..."
+            value={p5}
+            onChange={(e) => setP5(e.target.value)}
+          />
+        </div>
       </div>
 
-      {/* PREGUNTA 6 */}
-      <div className="flex flex-col gap-3">
-        <p className="text-2xl">
+      {/* ----PREGUNTA 6 */}
+      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+        <p className="text-xl font-bold text-gray-700 leading-snug">
           6. ¿Conoce a alguien que no sepa leer y escribir?
         </p>
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2 text-2xl">
+        {/* BOTONES SÍ / NO */}
+        <div className="flex gap-4">
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p6 === "si"
+                ? "bg-red-50 border-red-500 text-red-600"
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+            }`}
+          >
             <input
               type="radio"
               name="p6"
               value="si"
+              className="hidden"
               onChange={(e) => setP6(e.target.value)}
-            />{" "}
+            />
             Sí
           </label>
-          <label className="flex items-center gap-2 text-2xl">
+          <label
+            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+              p6 === "no"
+                ? "bg-red-50 border-red-500 text-red-600"
+                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+            }`}
+          >
             <input
               type="radio"
               name="p6"
               value="no"
+              className="hidden"
               onChange={(e) => setP6(e.target.value)}
-            />{" "}
+            />
             No
           </label>
         </div>
+        {/* CAJA DE TEXTO DINÁMICA (Solo sale si es SÍ) */}
         {p6 === "si" && (
-          <input
-            className="border p-4 text-2xl rounded mt-2"
-            placeholder="¿Cuántos?"
-            type="number"
-            value={p6cuantos}
-            onChange={(e) => setP6cuantos(e.target.value)}
-          />
+          <div className="flex flex-col gap-3 mt-1">
+            <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
+              ¿Cuántas personas aproximadamente?
+            </p>
+            <input
+              type="number"
+              className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-400 transition-all outline-none"
+              placeholder="Número de personas"
+              value={p6cuantos}
+              onChange={(e) => setP6cuantos(e.target.value)}
+            />
+          </div>
         )}
       </div>
 
       {/* BOTÓN FINALIZAR */}
       <button
-        className={`${guardando ? "opacity-50 cursor-not-allowed" : ""} bg-red-600 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full`}
+        className={`${guardando ? "font-bold opacity-50 cursor-not-allowed" : ""} bg-red-600 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full`}
         onClick={guardarEncuestaLocal}
         disabled={guardando}
       >
@@ -491,7 +733,7 @@ export default function Survey({
       </button>
 
       <button
-        className="bg-gray-500 text-black text-2xl font-bold rounded-xl p-6 min-h-[80px] w-full mb-4"
+        className="bg-slate-700 text-white text-2xl font-bold rounded-xl p-6 min-h-[80px] w-full mb-4"
         onClick={cancelarEncuesta}
       >
         Cancelar Encuesta X
