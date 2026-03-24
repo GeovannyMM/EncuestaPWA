@@ -87,7 +87,7 @@ export default function Survey({
                 "Lugar desconocido",
             );
           } catch (error) {
-            setLugar("");
+            setLugar("Coordenadas guardas (sin conexión)");
           }
           resolve(true); //GPS exitoso
         },
@@ -208,7 +208,7 @@ export default function Survey({
   if (etapa === "datos_iniciales") {
     return (
       <div className="flex flex-col p-6 pt-20 bg-linear-to-b from-red-600 to-red-900 gap-8 pb-32 min-h-screen justify-center items-center">
-        <div className="relative w-full max-w-sm flex flex-col gap-6 bg-white p-8 rounded-2xl shadow-lg border">
+        <div className="relative w-full max-w-sm flex flex-col gap-6 bg-white p-8 rounded-2xl shadow-lg border-white">
           <h1
             className="text-transparent bg-linear-to-r from-red-800 to-red-600 
           bg-clip-text text-4xl font-black text-center pt-3"
@@ -347,32 +347,34 @@ export default function Survey({
           >
             {cargandoGPS ? (
               <>
-                {/* Ícono anclado a la pared izquierda (ya no empuja al texto) */}
-                <div className="absolute left-6">
+                {/* Ícono anclado a la izquierda */}
+                <div className="absolute left-6 flex items-center">
                   <MapPin className="w-7 h-7 animate-bounce" />
                 </div>
 
-                {/* Texto centrado con los 3 puntitos que prenden y apagan en secuencia */}
-                <div className="text-xl flex tracking-wide">
-                  Obteniendo ubicación
-                  <span
-                    className="animate-pulse"
-                    style={{ animationDelay: "0ms" }}
-                  >
-                    .
-                  </span>
-                  <span
-                    className="animate-pulse"
-                    style={{ animationDelay: "300ms" }}
-                  >
-                    .
-                  </span>
-                  <span
-                    className="animate-pulse"
-                    style={{ animationDelay: "600ms" }}
-                  >
-                    .
-                  </span>
+                {/* Agregamos px-10 (padding horizontal) para que el texto no toque los bordes donde está el icono */}
+                <div className="text-xl flex tracking-wide px-10 text-center justify-center w-full">
+                  <span>Obteniendo ubicación</span>
+                  <div className="flex">
+                    <span
+                      className="animate-pulse"
+                      style={{ animationDelay: "0ms" }}
+                    >
+                      .
+                    </span>
+                    <span
+                      className="animate-pulse"
+                      style={{ animationDelay: "300ms" }}
+                    >
+                      .
+                    </span>
+                    <span
+                      className="animate-pulse"
+                      style={{ animationDelay: "600ms" }}
+                    >
+                      .
+                    </span>
+                  </div>
                 </div>
               </>
             ) : errorGPS ? (

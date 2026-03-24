@@ -12,11 +12,25 @@ declare global {
 declare const self: WorkerGlobalScope;
 
 const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST,
+  // Inyectamos agresivamente la página principal al caché de instalación
+  precacheEntries: [
+    ...(self.__SW_MANIFEST || []),
+    { url: "/", revision: "v1-app-router" }
+  ],
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: defaultCache,
+  fallbacks: {
+    entries: [
+      {
+        url: "/", // <-- Ahora sí la encontrará en el caché
+        matcher({ request }) {
+          return request.destination === "document";
+        },
+      },
+    ],
+  },
 });
 
 serwist.addEventListeners();

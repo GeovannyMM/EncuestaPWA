@@ -7,9 +7,6 @@ type Props = {
 export default function Success({ onVolver }: Props) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-8 gap-6">
-      {/* ========================================================= */}
-      {/* MAGIA NEGRA CSS PARA LA PALOMITA APPLE PAY */}
-      {/* ========================================================= */}
       <style>{`
         /* 1. Dibuja el círculo exterior */
         .success-circle {
@@ -64,7 +61,7 @@ export default function Success({ onVolver }: Props) {
               className="success-circle"
               cx="26"
               cy="26"
-              r="25"
+              r="23" // <--- Bajamos de 25 a 23 para dar "aire" al borde
               fill="none"
               stroke="#22c55e"
               strokeWidth="4"
@@ -97,7 +94,7 @@ export default function Success({ onVolver }: Props) {
       </h1>
 
       <p className="text-xl text-center font-bold text-gray-500 mb-4">
-        Alojada segura en el dispositivo
+        Guardada en el dispositivo
       </p>
 
       <button

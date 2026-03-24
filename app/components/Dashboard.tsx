@@ -206,7 +206,7 @@ export default function Dashboard({
             {nombreEntrevistador}!
           </span>
         </h1>
-        {/* Línea decorativa opcional para dar estilo Fintech */}
+
         <div className="h-1 w-40 bg-green-700 mt-3 rounded-full" />
       </div>
 

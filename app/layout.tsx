@@ -12,19 +12,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// 1. conección de la PWA con el navegador
+// 1. Conexión de la PWA con el navegador y llaves de iPhone
 export const metadata: Metadata = {
   title: "Encuesta Alfabetismo",
   description: "PWA Offline para encuestas en campo",
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest", // <--- Corrección aquí (.webmanifest)
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Encuesta",
+  },
 };
 
-// 2. Fundamental para que no se vea la "pantalla negra o plana" en celulares
 export const viewport: Viewport = {
   themeColor: "#ef4444",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -36,7 +41,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black min-h-screen overscroll-none`}
       >
         {children}
       </body>
