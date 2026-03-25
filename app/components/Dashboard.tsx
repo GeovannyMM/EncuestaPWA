@@ -96,6 +96,13 @@ export default function Dashboard({
       }
     };
     resolverLugaresPendientes();
+
+    // Cuando el sistema operativo detecte señal, despierta esta función
+    window.addEventListener("online", resolverLugaresPendientes);
+
+    return () => {
+      window.removeEventListener("online", resolverLugaresPendientes);
+    };
   }, [encuestasReales]);
 
   const borrarEncuesta = async (id: number) => {
@@ -111,7 +118,10 @@ export default function Dashboard({
   };
 
   const sincronizarEncuestas = async () => {
-    const pendientes = encuestasReales.filter((e) => !e.estado_sinc);
+    // Seguro Anti-Carreras: Solo empuja a MySQL si NO está sincronizada Y (ya cargó el lugar O no tiene GPS)
+    const pendientes = encuestasReales.filter(
+      (e) => !e.estado_sinc && (e.lugar !== "" || e.ubicacion.lat === 0),
+    );
     if (pendientes.length === 0) {
       // alert("No hay encuestas pendientes de sincronizar");
       return;
@@ -289,7 +299,7 @@ export default function Dashboard({
                     {enc.lugar ||
                       (enc.ubicacion.lat === 0
                         ? "Ubicación no disponible"
-                        : "coordenas GPS")}
+                        : "Guardado sin conexión (Buscando ciudad...)")}
                   </span>
                 </div>
               </div>

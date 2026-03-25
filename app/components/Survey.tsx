@@ -87,7 +87,7 @@ export default function Survey({
                 "Lugar desconocido",
             );
           } catch (error) {
-            setLugar("Coordenadas guardas (sin conexión)");
+            setLugar(""); // <--- DEBE IR VACÍO para que el Dashboard sepa que falta investigar
           }
           resolve(true); //GPS exitoso
         },
