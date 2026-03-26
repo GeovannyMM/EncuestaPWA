@@ -41,11 +41,12 @@ export default function Home() {
   if (cargandoSesion) return null;
 
   return (
-    <main className="min-h-screen w-full flex flex-col bg-white text-black">
+    <main className="h-full w-full max-w-md mx-auto flex flex-col bg-white text-black overflow-hidden relative sm:border-x sm:border-gray-200 sm:shadow-[0_0_60px_-15px_rgba(0,0,0,0.3)]">
       {/* ....................................................................... */}
 
-      <div>
-        {/* --- ERUDA PARA DESARROLLO CELULAR --- */}
+      {/*le damos Scroll interior automático */}
+      <div className="flex-1 overflow-y-auto h-full w-full">
+        {/* --- ERUDA PARA DESARROLLO MOVIL --- 
         <Script
           src="//cdn.jsdelivr.net/npm/eruda"
           strategy="lazyOnload"
@@ -55,7 +56,7 @@ export default function Home() {
             }
           }}
         />
-        {/* ------------------------------------- */}
+         ------------------------------------- */}
         {step === "login" && (
           <Login
             onLogin={(id, nombre) => {

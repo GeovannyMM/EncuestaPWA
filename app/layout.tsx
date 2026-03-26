@@ -41,7 +41,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black min-h-screen overscroll-none`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-100 text-black h-dvh w-screen 
+        fixed inset-0 overflow-hidden overscroll-none`}
       >
         {children}
       </body>

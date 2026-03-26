@@ -165,7 +165,7 @@ export default function Dashboard({
   }, [encuestasReales]);
 
   return (
-    <div className="flex flex-col h-dvh overflow-hidden bg-white relative">
+    <div className="flex flex-col h-full w-full overflow-hidden bg-white relative">
       {/* 1. BARRA SUPERIOR (Menú Dropdown IZQUIERDA | Logo DERECHA) */}
       <div className="flex items-center justify-between px-4 pt-5 relative z-50 mb-3">
         {/* === LADO IZQUIERDO: MENÚ HAMBURGUESA === */}

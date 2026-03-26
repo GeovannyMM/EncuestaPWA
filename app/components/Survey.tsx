@@ -395,351 +395,357 @@ export default function Survey({
   }
 
   return (
-    <div className="flex flex-col px-3 py-6  gap-8 pb-32 bg-gray-50 min-h-screen">
-      <h1
-        className="text-5xl font-black text-transparent pl-3 bg-linear-to-r from-red-800 to-red-600 
-          bg-clip-text pt-5 pb-2"
-      >
-        Cuestionario
-      </h1>
-
-      {/* PREGUNTA 1 */}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
-        {/* Texto limpio y oscuro */}
-        <p className="text-xl font-bold text-gray-700 leading-snug">
-          1. ¿En los últimos años ha recibido algún programa de alfabetización?
-        </p>
-
-        {/* Reemplazamos los Radios Redondos por Cajas Anchas Mate */}
-        <div className="flex gap-4">
-          {/* BOTÓN SÍ */}
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p1 === "si"
-                ? "bg-red-50 border-red-500 text-red-600" // Brillará si lo seleccionan
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200" // Apagado mate
-            }`}
-          >
-            <input
-              type="radio"
-              name="p1"
-              value="si"
-              className="hidden" // <--- radio button cambio
-              onChange={(e) => setP1(e.target.value)}
-            />
-            Sí
-          </label>
-          {/* BOTÓN NO */}
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p1 === "no"
-                ? "bg-red-50 border-red-500 text-red-600"
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              name="p1"
-              value="no"
-              className="hidden" // Ocultamos la bolita de Radio
-              onChange={(e) => setP1(e.target.value)}
-            />
-            No
-          </label>
-        </div>
+    <div className="flex flex-col px-3 py-6 gap-8 pb-32 bg-gray-50 h-full w-full overflow-hidden">
+      {/* ENCABEZADO FIJO (H1) */}
+      <div className="shrink-0">
+        <h1
+          className="text-5xl font-black text-transparent pl-3 bg-linear-to-r from-red-800 to-red-600 
+            bg-clip-text pt-2 pb-2"
+        >
+          Cuestionario
+        </h1>
       </div>
-      {/* PREGUNTA 2 */}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
-        <p className="text-xl font-bold text-gray-700 leading-snug">
-          2. ¿Ha recibido apoyo económico de algún programa de alfabetización?
-        </p>
-        {/* BOTONES SÍ / NO */}
-        <div className="flex gap-4">
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p2 === "si"
-                ? "bg-red-50 border-red-500 text-red-600"
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              name="p2"
-              value="si"
-              className="hidden"
-              onChange={(e) => setP2(e.target.value)}
-            />
-            Sí
-          </label>
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p2 === "no"
-                ? "bg-red-50 border-red-500 text-red-600"
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              name="p2"
-              value="no"
-              className="hidden"
-              onChange={(e) => setP2(e.target.value)}
-            />
-            No
-          </label>
-        </div>
-        {/* SUB-PREGUNTA DINÁMICA (Solo sale si opres SÍ) */}
-        {p2 === "si" && (
-          <div className="flex flex-col gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
-            <p className="text-lg font-bold text-gray-600 text-center">
-              ¿De qué programa?
-            </p>
 
-            {/* Opciones en lista vertical tipo examen para leerlas bien */}
-            <div className="flex flex-col gap-3">
-              {["INEA", "Chiapas Puede", "Otro"].map((op) => (
-                <label
-                  key={op}
-                  className={`rounded-xl p-4 text-center text-lg font-bold cursor-pointer transition-all border-2 ${
-                    p2cual === op
-                      ? "bg-red-50 border-red-500 text-red-600"
-                      : "bg-white border-gray-200 text-gray-500 hover:bg-gray-100"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="p2cual"
-                    value={op}
-                    className="hidden"
-                    onChange={(e) => setP2cual(e.target.value)}
-                  />
-                  {op}
-                </label>
-              ))}
-            </div>
+      <div className="flex-1 overflow-y-auto flex flex-col gap-8 pb-10">
+        {/* PREGUNTA 1 */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+          {/* Texto limpio y oscuro */}
+          <p className="text-xl font-bold text-gray-700 leading-snug">
+            1. ¿En los últimos años ha recibido algún programa de
+            alfabetización?
+          </p>
+
+          {/* Reemplazamos los Radios Redondos por Cajas Anchas Mate */}
+          <div className="flex gap-4">
+            {/* BOTÓN SÍ */}
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p1 === "si"
+                  ? "bg-red-50 border-red-500 text-red-600" // Brillará si lo seleccionan
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200" // Apagado mate
+              }`}
+            >
+              <input
+                type="radio"
+                name="p1"
+                value="si"
+                className="hidden" // <--- radio button cambio
+                onChange={(e) => setP1(e.target.value)}
+              />
+              Sí
+            </label>
+            {/* BOTÓN NO */}
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p1 === "no"
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="p1"
+                value="no"
+                className="hidden" // Ocultamos la bolita de Radio
+                onChange={(e) => setP1(e.target.value)}
+              />
+              No
+            </label>
           </div>
-        )}
-      </div>
-
-      {/*------------ PREGUNTA 3 ------------*/}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
-        <p className="text-xl font-bold text-gray-700 leading-snug">
-          3. ¿Sabe leer?
-        </p>
-        {/* BOTONES SÍ / NO */}
-        <div className="flex gap-4">
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p3 === "si"
-                ? "bg-red-50 border-red-500 text-red-600"
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              name="p3"
-              value="si"
-              className="hidden"
-              onChange={(e) => setP3(e.target.value)}
-            />
-            Sí
-          </label>
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p3 === "no"
-                ? "bg-red-50 border-red-500 text-red-600"
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              name="p3"
-              value="no"
-              className="hidden"
-              onChange={(e) => setP3(e.target.value)}
-            />
-            No
-          </label>
         </div>
-        {/* SUB-PREGUNTA DINÁMICA (Solo sale si es SÍ) */}
-        {p3 === "si" && (
-          <div className="flex flex-col gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
-            <p className="text-lg font-bold text-gray-600 text-center">
-              ¿En qué lengua?
-            </p>
-            <div className="flex flex-col gap-3">
-              {["Español", "Tseltal", "Tsotsil", "Otro"].map((op) => (
-                <label
-                  key={op}
-                  className={`rounded-xl p-4 text-center text-lg font-bold cursor-pointer transition-all border-2 ${
-                    p3lengua === op
-                      ? "bg-red-50 border-red-500 text-red-600"
-                      : "bg-white border-gray-200 text-gray-500 hover:bg-gray-100"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="p3lengua"
-                    value={op}
-                    className="hidden"
-                    onChange={(e) => setP3lengua(e.target.value)}
-                  />
-                  {op}
-                </label>
-              ))}
-            </div>
+        {/* PREGUNTA 2 */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+          <p className="text-xl font-bold text-gray-700 leading-snug">
+            2. ¿Ha recibido apoyo económico de algún programa de alfabetización?
+          </p>
+          {/* BOTONES SÍ / NO */}
+          <div className="flex gap-4">
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p2 === "si"
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="p2"
+                value="si"
+                className="hidden"
+                onChange={(e) => setP2(e.target.value)}
+              />
+              Sí
+            </label>
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p2 === "no"
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="p2"
+                value="no"
+                className="hidden"
+                onChange={(e) => setP2(e.target.value)}
+              />
+              No
+            </label>
           </div>
-        )}
-      </div>
+          {/* SUB-PREGUNTA DINÁMICA (Solo sale si opres SÍ) */}
+          {p2 === "si" && (
+            <div className="flex flex-col gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
+              <p className="text-lg font-bold text-gray-600 text-center">
+                ¿De qué programa?
+              </p>
 
-      {/*------------ PREGUNTA 4 ------------*/}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
-        <p className="text-xl font-bold text-gray-700 leading-snug">
-          4. ¿Sabe escribir?
-        </p>
-        {/* BOTONES SÍ / NO */}
-        <div className="flex gap-4">
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p4 === "si"
-                ? "bg-red-50 border-red-500 text-red-600"
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              name="p4"
-              value="si"
-              className="hidden"
-              onChange={(e) => setP4(e.target.value)}
-            />
-            Sí
-          </label>
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p4 === "no"
-                ? "bg-red-50 border-red-500 text-red-600"
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              name="p4"
-              value="no"
-              className="hidden"
-              onChange={(e) => setP4(e.target.value)}
-            />
-            No
-          </label>
+              {/* Opciones en lista vertical tipo examen para leerlas bien */}
+              <div className="flex flex-col gap-3">
+                {["INEA", "Chiapas Puede", "Otro"].map((op) => (
+                  <label
+                    key={op}
+                    className={`rounded-xl p-4 text-center text-lg font-bold cursor-pointer transition-all border-2 ${
+                      p2cual === op
+                        ? "bg-red-50 border-red-500 text-red-600"
+                        : "bg-white border-gray-200 text-gray-500 hover:bg-gray-100"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="p2cual"
+                      value={op}
+                      className="hidden"
+                      onChange={(e) => setP2cual(e.target.value)}
+                    />
+                    {op}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        {/* CAJA DE TEXTO DINÁMICA (Solo sale si es SÍ) */}
-        {p4 === "si" && (
-          <div className="flex flex-col gap-3 mt-1">
-            <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
-              Prueba de escritura
-            </p>
-            <input
-              className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 
+
+        {/*------------ PREGUNTA 3 ------------*/}
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+          <p className="text-xl font-bold text-gray-700 leading-snug">
+            3. ¿Sabe leer?
+          </p>
+          {/* BOTONES SÍ / NO */}
+          <div className="flex gap-4">
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p3 === "si"
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="p3"
+                value="si"
+                className="hidden"
+                onChange={(e) => setP3(e.target.value)}
+              />
+              Sí
+            </label>
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p3 === "no"
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="p3"
+                value="no"
+                className="hidden"
+                onChange={(e) => setP3(e.target.value)}
+              />
+              No
+            </label>
+          </div>
+          {/* SUB-PREGUNTA DINÁMICA (Solo sale si es SÍ) */}
+          {p3 === "si" && (
+            <div className="flex flex-col gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
+              <p className="text-lg font-bold text-gray-600 text-center">
+                ¿En qué lengua?
+              </p>
+              <div className="flex flex-col gap-3">
+                {["Español", "Tseltal", "Tsotsil", "Otro"].map((op) => (
+                  <label
+                    key={op}
+                    className={`rounded-xl p-4 text-center text-lg font-bold cursor-pointer transition-all border-2 ${
+                      p3lengua === op
+                        ? "bg-red-50 border-red-500 text-red-600"
+                        : "bg-white border-gray-200 text-gray-500 hover:bg-gray-100"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="p3lengua"
+                      value={op}
+                      className="hidden"
+                      onChange={(e) => setP3lengua(e.target.value)}
+                    />
+                    {op}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/*------------ PREGUNTA 4 ------------*/}
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+          <p className="text-xl font-bold text-gray-700 leading-snug">
+            4. ¿Sabe escribir?
+          </p>
+          {/* BOTONES SÍ / NO */}
+          <div className="flex gap-4">
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p4 === "si"
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="p4"
+                value="si"
+                className="hidden"
+                onChange={(e) => setP4(e.target.value)}
+              />
+              Sí
+            </label>
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p4 === "no"
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="p4"
+                value="no"
+                className="hidden"
+                onChange={(e) => setP4(e.target.value)}
+              />
+              No
+            </label>
+          </div>
+          {/* CAJA DE TEXTO DINÁMICA (Solo sale si es SÍ) */}
+          {p4 === "si" && (
+            <div className="flex flex-col gap-3 mt-1">
+              <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
+                Prueba de escritura
+              </p>
+              <input
+                className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 
               border border-transparent text-gray-700 placeholder-gray-400 
               focus:bg-white focus:border-red-400 transition-all outline-none"
-              placeholder="Escriba su nombre y edad..."
-              value={p4escrito}
-              onChange={(e) => setP4escrito(e.target.value)}
-            />
-          </div>
-        )}
-      </div>
+                placeholder="Escriba su nombre y edad..."
+                value={p4escrito}
+                onChange={(e) => setP4escrito(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
 
-      {/* ---------- PREGUNTA 5 ---------- */}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
-        <p className="text-xl font-bold text-gray-700 leading-snug">
-          5. Escriba las vocales
-        </p>
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
-            Prueba de vocales
+        {/* ---------- PREGUNTA 5 ---------- */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+          <p className="text-xl font-bold text-gray-700 leading-snug">
+            5. Escriba las vocales
           </p>
-          <input
-            className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-400 transition-all outline-none"
-            placeholder="A, E, I, O, U..."
-            value={p5}
-            onChange={(e) => setP5(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* ----PREGUNTA 6 */}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
-        <p className="text-xl font-bold text-gray-700 leading-snug">
-          6. ¿Conoce a alguien que no sepa leer y escribir?
-        </p>
-        {/* BOTONES SÍ / NO */}
-        <div className="flex gap-4">
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p6 === "si"
-                ? "bg-red-50 border-red-500 text-red-600"
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              name="p6"
-              value="si"
-              className="hidden"
-              onChange={(e) => setP6(e.target.value)}
-            />
-            Sí
-          </label>
-          <label
-            className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
-              p6 === "no"
-                ? "bg-red-50 border-red-500 text-red-600"
-                : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
-            }`}
-          >
-            <input
-              type="radio"
-              name="p6"
-              value="no"
-              className="hidden"
-              onChange={(e) => setP6(e.target.value)}
-            />
-            No
-          </label>
-        </div>
-        {/* CAJA DE TEXTO DINÁMICA (Solo sale si es SÍ) */}
-        {p6 === "si" && (
-          <div className="flex flex-col gap-3 mt-1">
+          <div className="flex flex-col gap-3">
             <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
-              ¿Cuántas personas aproximadamente?
+              Prueba de vocales
             </p>
             <input
-              type="number"
               className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-400 transition-all outline-none"
-              placeholder="Número de personas"
-              value={p6cuantos}
-              onChange={(e) => setP6cuantos(e.target.value)}
+              placeholder="vocales ..."
+              value={p5}
+              onChange={(e) => setP5(e.target.value)}
             />
           </div>
-        )}
+        </div>
+
+        {/* ----PREGUNTA 6 */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
+          <p className="text-xl font-bold text-gray-700 leading-snug">
+            6. ¿Conoce a alguien que no sepa leer y escribir?
+          </p>
+          {/* BOTONES SÍ / NO */}
+          <div className="flex gap-4">
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p6 === "si"
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="p6"
+                value="si"
+                className="hidden"
+                onChange={(e) => setP6(e.target.value)}
+              />
+              Sí
+            </label>
+            <label
+              className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
+                p6 === "no"
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
+              }`}
+            >
+              <input
+                type="radio"
+                name="p6"
+                value="no"
+                className="hidden"
+                onChange={(e) => setP6(e.target.value)}
+              />
+              No
+            </label>
+          </div>
+          {/* CAJA DE TEXTO DINÁMICA (Solo sale si es SÍ) */}
+          {p6 === "si" && (
+            <div className="flex flex-col gap-3 mt-1">
+              <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
+                ¿Cuántas personas aproximadamente?
+              </p>
+              <input
+                type="number"
+                className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-400 transition-all outline-none"
+                placeholder="Número de personas"
+                value={p6cuantos}
+                onChange={(e) => setP6cuantos(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* BOTÓN FINALIZAR */}
+        <button
+          className={`${guardando ? "font-bold opacity-50 cursor-not-allowed" : ""} bg-red-600 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full`}
+          onClick={guardarEncuestaLocal}
+          disabled={guardando}
+        >
+          {guardando ? "Guardando..." : "Guardar Encuesta ✓"}
+        </button>
+
+        <button
+          className="bg-slate-700 text-white text-2xl font-bold rounded-xl p-6 min-h-[80px] w-full mb-4"
+          onClick={cancelarEncuesta}
+        >
+          Cancelar Encuesta X
+        </button>
       </div>
-
-      {/* BOTÓN FINALIZAR */}
-      <button
-        className={`${guardando ? "font-bold opacity-50 cursor-not-allowed" : ""} bg-red-600 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full`}
-        onClick={guardarEncuestaLocal}
-        disabled={guardando}
-      >
-        {guardando ? "Guardando..." : "Guardar Encuesta ✓"}
-      </button>
-
-      <button
-        className="bg-slate-700 text-white text-2xl font-bold rounded-xl p-6 min-h-[80px] w-full mb-4"
-        onClick={cancelarEncuesta}
-      >
-        Cancelar Encuesta X
-      </button>
     </div>
   );
 }
