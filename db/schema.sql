@@ -36,9 +36,8 @@ CREATE TABLE IF NOT EXISTS encuestas (
 );
 
 
-
+----------------------------------------------------------------------
 USE encuesta_alfabetismo;
-
 
 ALTER TABLE usuarios MODIFY nombre_completo VARCHAR(255) NULL;
 
@@ -46,3 +45,13 @@ INSERT INTO usuarios (id, nombre_completo, usuario_slug) VALUES
 (1, 'Juan Pérez', 'juanP'),
 (2, 'María López', 'mariaL'),
 (3, 'Carlos Ruiz', 'carlosR');
+
+
+
+-------------------------------------------------------------
+
+ALTER TABLE encuestas ADD COLUMN sexo VARCHAR(10) AFTER edad;
+
+---------------------------------------------------------------
+
+ALTER TABLE encuestas CHANGE p4escrito p4_folio VARCHAR(100);

@@ -47,7 +47,7 @@ export default function Survey({
   const [apellidoMaterno, setApellidoMaterno] = useState("");
   const [edad, setEdad] = useState("");
   const [sexo, setSexo] = useState("");
-  const [p4escrito, setP4escrito] = useState("");
+  const [p4_folio, setP4_folio] = useState("");
   const [p5, setP5] = useState("");
   const [p6, setP6] = useState("");
   const [p6cuantos, setP6cuantos] = useState("");
@@ -155,14 +155,14 @@ export default function Survey({
         respuestas: {
           p1,
           p2,
-          p2cual,
+          p2cual: p2 === "si" ? p2cual : "",
           p3,
-          p3lengua,
+          p3lengua: p3 === "si" ? p3lengua : "",
           p4,
-          p4escrito,
-          p5,
+          p4_folio: p4 === "si" ? p4_folio : "",
+          p5: p4 === "si" ? p5 : "",
           p6,
-          p6cuantos,
+          p6cuantos: p6 === "si" ? p6cuantos : "",
         },
       };
 
@@ -193,7 +193,7 @@ export default function Survey({
       setP3("");
       setP3lengua("");
       setP4("");
-      setP4escrito("");
+      setP4_folio("");
       setP5("");
       setP6("");
       setP6cuantos("");
@@ -573,26 +573,65 @@ export default function Survey({
                 ¿En qué lengua?
               </p>
               <div className="flex flex-col gap-3">
-                {["Español", "Tseltal", "Tsotsil", "Otro"].map((op) => (
-                  <label
-                    key={op}
-                    className={`rounded-xl p-4 text-center text-lg font-bold cursor-pointer transition-all border-2 ${
-                      p3lengua === op
-                        ? "bg-red-50 border-red-500 text-red-600"
-                        : "bg-white border-gray-200 text-gray-500 hover:bg-gray-100"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="p3lengua"
-                      value={op}
-                      className="hidden"
-                      onChange={(e) => setP3lengua(e.target.value)}
-                    />
-                    {op}
-                  </label>
-                ))}
+                {["Español", "Tseltal", "Tsotsil", "Otro"].map((op) => {
+                  const isSelected = p3lengua.includes(op);
+                  return (
+                    <label
+                      key={op}
+                      className={`rounded-xl p-4 text-center text-lg font-bold cursor-pointer transition-all border-2 ${
+                        isSelected
+                          ? "bg-red-50 border-red-500 text-red-600"
+                          : "bg-white border-gray-200 text-gray-500 hover:bg-gray-100"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        value={op}
+                        className="hidden"
+                        checked={isSelected}
+                        onChange={(e) => {
+                          let arr = p3lengua ? p3lengua.split(", ") : [];
+                          if (e.target.checked) {
+                            arr.push(op);
+                          } else {
+                            arr = arr.filter((l) => l !== op);
+                          }
+                          setP3lengua(arr.join(", "));
+                        }}
+                      />
+                      {op}
+                    </label>
+                  );
+                })}
               </div>
+
+              {p3lengua.length > 0 && (
+                <div className="mt-4 py-6 px-3 bg-linear-to-b from-blue-50 to-white border-2 border-blue-100 rounded-3xl flex flex-col items-center gap-5 shadow-sm animate-fade-in w-full">
+                  <div className="bg-blue-100/70 px-4 py-2 rounded-full inline-flex items-center gap-2">
+                    <span className="text-lg">📖</span>
+                    <span className="text-blue-800 font-black text-sm uppercase tracking-widest">
+                      Prueba de Lectura
+                    </span>
+                  </div>
+
+                  <p className="text-gray-500 font-medium text-center text-sm px-1">
+                    Muestre la pantalla y pídale al encuestado que lea la frase:
+                  </p>
+
+                  <div className="w-full bg-white px-2 py-12 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 text-center relative overflow-hidden">
+                    <span className="absolute top-2 left-2 text-7xl text-blue-50 font-serif leading-none select-none">
+                      "
+                    </span>
+                    <span className="absolute bottom-[-20px] right-2 text-8xl text-blue-50 font-serif leading-none select-none">
+                      "
+                    </span>
+
+                    <p className="text-3xl sm:text-4xl font-black text-red-800 leading-tight relative z-10 font-serif tracking-wide px-2">
+                      La ingratitud es Hija de la Soberbia
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -647,31 +686,33 @@ export default function Survey({
                 className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 
               border border-transparent text-gray-700 placeholder-gray-400 
               focus:bg-white focus:border-red-400 transition-all outline-none"
-                placeholder="Escriba su nombre y edad..."
-                value={p4escrito}
-                onChange={(e) => setP4escrito(e.target.value)}
+                placeholder="Ingrese el Folio de la hoja de evaluación..."
+                value={p4_folio}
+                onChange={(e) => setP4_folio(e.target.value)}
               />
             </div>
           )}
         </div>
 
         {/* ---------- PREGUNTA 5 ---------- */}
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
-          <p className="text-xl font-bold text-gray-700 leading-snug">
-            5. Escriba las vocales
-          </p>
-          <div className="flex flex-col gap-3">
-            <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
-              Prueba de vocales
+        {p4 === "si" && (
+          <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6 animate-fade-in">
+            <p className="text-xl font-bold text-gray-700 leading-snug">
+              5. Escriba las vocales
             </p>
-            <input
-              className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-400 transition-all outline-none"
-              placeholder="vocales ..."
-              value={p5}
-              onChange={(e) => setP5(e.target.value)}
-            />
+            <div className="flex flex-col gap-3">
+              <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
+                Prueba de vocales
+              </p>
+              <input
+                className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-400 transition-all outline-none"
+                placeholder="vocales ..."
+                value={p5}
+                onChange={(e) => setP5(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ----PREGUNTA 6 */}
         <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">

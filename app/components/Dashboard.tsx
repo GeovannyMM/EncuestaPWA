@@ -167,7 +167,7 @@ export default function Dashboard({
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-white relative">
       {/* 1. BARRA SUPERIOR (Menú Dropdown IZQUIERDA | Logo DERECHA) */}
-      <div className="flex items-center justify-between px-4 pt-5 relative z-50 mb-3">
+      <div className="flex items-center justify-between px-4 pt-3 relative z-50 mb-3">
         {/* === LADO IZQUIERDO: MENÚ HAMBURGUESA === */}
         <div className="relative">
           <button
@@ -190,23 +190,22 @@ export default function Dashboard({
             </div>
           )}
         </div>
-        {/* === FIN LADO IZQUIERDO === */}
-        {/* === LADO DERECHO: LOGO CORREGIDO === */}
-        <div className="pr-1 pt-3 pb-3">
+
+        {/* === LADO DERECHO: LOGO === */}
+        <div className="pr-2 drop-shadow-sm">
           <Image
-            src="/corazonchiapas.png"
-            alt="Logo Chiapas Puede"
-            width={80}
-            height={20}
+            src="/corazonchiapas.svg"
+            alt="Logo Corazón Chiapas"
+            width={70}
+            height={70}
             className="object-contain"
             priority
           />
         </div>
-        {/* === FIN LADO DERECHO === */}
       </div>
 
       {/* ZONA DEL TÍTULO (Alineado en una sola línea) */}
-      <div className="flex flex-col px-6 pt-6 mb-13">
+      <div className="flex flex-col px-6 pt-2 mb-10">
         <h1
           className={`${montserrat.className} text-[30px] text-slate-900 font-extrabold 
           tracking-tighter uppercase leading-none`}

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="30 50 140 120" width="100%" height="100%">
+  <defs>
+    <g id="diamond">
+      <!-- Borde guinda exterior -->
+      <polygon points="30,0 0,-30 -30,0 0,30" fill="#B41B32" />
+      <!-- Borde blanco intermedio -->
+      <polygon points="18,0 0,-18 -18,0 0,18" fill="#ffffff" />
+      <!-- Centro verde esmeralda -->
+      <polygon points="8,0 0,-8 -8,0 0,8" fill="#1B6C53" />
+      <!-- Punto blanco central -->
+      <circle cx="0" cy="0" r="2.5" fill="#ffffff" />
+    </g>
+  </defs>
+
+  <!-- Rombo Izquierdo -->
+  <use href="#diamond" transform="translate(65, 100)" />
+  
+  <!-- Rombo Derecho -->
+  <use href="#diamond" transform="translate(135, 100)" />
+  
+  <!-- Rombo Inferior -->
+  <use href="#diamond" transform="translate(100, 135)" />
+  
+  <!-- Rombo Superior (Escalado más pequeño como en el logo original) -->
+  <use href="#diamond" transform="translate(100, 75) scale(0.666667)" />
+</svg>
