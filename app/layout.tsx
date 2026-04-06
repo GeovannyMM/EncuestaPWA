@@ -12,11 +12,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// 1. Conexión de la PWA con el navegador y llaves de iPhone
 export const metadata: Metadata = {
   title: "Encuesta Alfabetismo",
   description: "PWA Offline para encuestas en campo",
-  manifest: "/manifest.webmanifest", // <--- Corrección aquí (.webmanifest)
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

@@ -14,27 +14,24 @@ export default function Home() {
   const [entrevistadorNombre, setEntrevistadorNombre] = useState("");
   const [cargandoSesion, setCargandoSesion] = useState(true);
 
-  // Al abrir la app, buscamos si ya había alguien logueado en la memoria
-  // Al abrir la app, buscamos si ya había alguien logueado en la memoria
   useEffect(() => {
     try {
       const sesionGuardada = localStorage.getItem("encuesta_sesion");
       if (sesionGuardada) {
         const datos = JSON.parse(sesionGuardada);
-        // Validamos que 'datos' realmente sea un objeto con la propiedad id
         if (datos && datos.id) {
           setEntrevistadorId(datos.id);
           setEntrevistadorNombre(datos.nombre);
           setStep("dashboard");
         } else {
-          localStorage.removeItem("encuesta_sesion"); // Limpiar basura
+          localStorage.removeItem("encuesta_sesion");
         }
       }
     } catch (error) {
       console.warn("Dato inválido en sesión, limpiando...", error);
-      localStorage.removeItem("encuesta_sesion"); // Limpiamos la basura si JSON falla
+      localStorage.removeItem("encuesta_sesion");
     } finally {
-      setCargandoSesion(false); // Siempre se debe quitar la pantalla de carga
+      setCargandoSesion(false);
     }
   }, []);
 
@@ -42,21 +39,7 @@ export default function Home() {
 
   return (
     <main className="h-full w-full max-w-md mx-auto flex flex-col bg-white text-black overflow-hidden relative sm:border-x sm:border-gray-200 sm:shadow-[0_0_60px_-15px_rgba(0,0,0,0.3)]">
-      {/* ....................................................................... */}
-
-      {/*le damos Scroll interior automático */}
       <div className="flex-1 overflow-y-auto h-full w-full">
-        {/* --- ERUDA PARA DESARROLLO MOVIL --- 
-        <Script
-          src="//cdn.jsdelivr.net/npm/eruda"
-          strategy="lazyOnload"
-          onLoad={() => {
-            if (typeof window !== "undefined" && (window as any).eruda) {
-              (window as any).eruda.init();
-            }
-          }}
-        />
-         ------------------------------------- */}
         {step === "login" && (
           <Login
             onLogin={(id, nombre) => {

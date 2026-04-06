@@ -15,10 +15,8 @@ export default function Login({ onLogin }: Props) {
   useEffect(() => {
     const descargarUsuariosMySQL = async () => {
       try {
-        // 1. Buscamos si ya tenemos una fecha de sincronización previa
         const lastSync = localStorage.getItem("ultima_sinc_usuarios") || "";
 
-        // 2. Armamos la URL. Si hay fecha, la agregamos; si no, pedimos todo.
         const url = lastSync
           ? `/api/usuarios?lastSync=${lastSync}`
           : "/api/usuarios";
@@ -31,10 +29,8 @@ export default function Login({ onLogin }: Props) {
 
         if (ok && Array.isArray(data)) {
           if (data.length > 0) {
-            // 3. Dexie solo catua si hay datos nuevos
             await db.usuarios.bulkPut(data);
 
-            // 4. Guarda la fecha y hora actual para la próxima vez
             localStorage.setItem(
               "ultima_sinc_usuarios",
               new Date().toISOString(),
@@ -64,7 +60,6 @@ export default function Login({ onLogin }: Props) {
     }
 
     try {
-      // 1. Buscador Dexie (Offline)
       const usuarioEncontrado = await db.usuarios
         .where("usuario_slug")
         .equalsIgnoreCase(usuario.trim())

@@ -47,21 +47,16 @@ export default function Success({ onVolver }: Props) {
         }
       `}</style>
 
-      {/* ========================================================= */}
-      {/* EL ÍCONO ANIMADO GIGANTE REACONDICIONADO */}
-      {/* ========================================================= */}
       <div className="relative flex items-center justify-center w-40 h-40 mb-4">
-        {/* El halo verde fantasma que explota simulando el 'Poof' */}
         <div className="absolute inset-0 rounded-full border-[6px] border-green-400 success-poof opacity-0 bg-green-100/50"></div>
 
-        {/* El círculo y la palomita dibujándose a mano sobre una tarjeta redonda blanca */}
         <div className="relative z-10 bg-white rounded-full p-4 shadow-2xl success-wrapper opacity-0">
           <svg className="w-28 h-28" viewBox="0 0 52 52">
             <circle
               className="success-circle"
               cx="26"
               cy="26"
-              r="23" // <--- Bajamos de 25 a 23 para dar "aire" al borde
+              r="23"
               fill="none"
               stroke="#22c55e"
               strokeWidth="4"
@@ -79,9 +74,6 @@ export default function Success({ onVolver }: Props) {
         </div>
       </div>
 
-      {/* ========================================================= */}
-      {/* TEXTOS Y BOTÓN (Con una sutil animación de entrada) */}
-      {/* ========================================================= */}
       <h1
         className="text-4xl font-black text-gray-800 text-center tracking-tight animate-pulse"
         style={{

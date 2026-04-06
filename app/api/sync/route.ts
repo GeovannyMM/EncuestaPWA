@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
       `INSERT IGNORE INTO encuestas 
         (folio, entrevistador_id, nombre_encuestado, nombre, apellido_paterno, 
          apellido_materno, edad, sexo, fecha_hora, lat, lng, lugar,
-         p1, p2, p2cual, p3, p3lengua, p4, p4_folio, p5, p6, p6cuantos, estado_sinc, sincronizado_en)
+         p1, p2, p2cual, p3, p3lengua, p4, p4_folio, p5_folio, p6, p6cuantos, estado_sinc, sincronizado_en)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())`,
       [
         encuesta.folio ?? null,
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         encuesta.respuestas?.p3lengua ?? null,
         encuesta.respuestas?.p4 ?? null,
         encuesta.respuestas?.p4_folio ?? null,
-        encuesta.respuestas?.p5 ?? null,
+        encuesta.respuestas?.p5_folio ?? null,
         encuesta.respuestas?.p6 ?? null,
         encuesta.respuestas?.p6cuantos ?? null,
       ],

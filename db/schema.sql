@@ -27,9 +27,9 @@ CREATE TABLE IF NOT EXISTS encuestas (
   lugar             VARCHAR(255),
   p1 VARCHAR(5), p2 VARCHAR(5), p2cual VARCHAR(50),
   p3 VARCHAR(5), p3lengua VARCHAR(50),
-  p4 VARCHAR(5), p4escrito TEXT,
-  p5 TEXT, p6 VARCHAR(5), p6cuantos VARCHAR(20),
-  estado_sinc       BOOLEAN DEFAULT FALSE,
+  p4 VARCHAR(5),  p4_folio VARCHAR(255),
+  p5_folio VARCHAR(255), p6 VARCHAR(5), p6cuantos VARCHAR(20),
+  estado_sinc BOOLEAN DEFAULT FALSE,
   sincronizado_en   DATETIME,
   creado_en         DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (entrevistador_id) REFERENCES usuarios(id)

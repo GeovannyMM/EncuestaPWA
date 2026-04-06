@@ -16,7 +16,6 @@ type Props = {
   onTerminar: () => void;
   onCancelar: () => void;
 
-  //recibe el id del entrevistador
   entrevistadorId: number;
   entrevistadorNombre: string;
 };
@@ -48,9 +47,10 @@ export default function Survey({
   const [edad, setEdad] = useState("");
   const [sexo, setSexo] = useState("");
   const [p4_folio, setP4_folio] = useState("");
-  const [p5, setP5] = useState("");
+  const [p5_folio, setP5_folio] = useState("");
   const [p6, setP6] = useState("");
   const [p6cuantos, setP6cuantos] = useState("");
+  const [mostrarModalIncompleto, setMostrarModalIncompleto] = useState(false);
 
   const handleEdadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -59,7 +59,7 @@ export default function Survey({
     }
   };
 
-  // pide la ubicación al navegador, espera y avisa si tuvo exito
+  // pide la ubicación al navegador
   const capturarGPS = (): Promise<boolean> => {
     return new Promise((resolve) => {
       setErrorGPS("");
@@ -87,11 +87,10 @@ export default function Survey({
                 "Lugar desconocido",
             );
           } catch (error) {
-            setLugar(""); // <--- DEBE IR VACÍO para que el Dashboard sepa que falta investigar
+            setLugar("");
           }
-          resolve(true); //GPS exitoso
+          resolve(true);
         },
-        //el usuario rechazo los permisos o el GPS esta desactivado
         (error) => {
           console.error("Error GPS:", error);
           setErrorGPS(
@@ -104,7 +103,6 @@ export default function Survey({
     });
   };
 
-  // se ejecuta cuando se oprime comfirmar datos
   const handleComenzar = async () => {
     if (
       !nombre.trim() ||
@@ -116,11 +114,11 @@ export default function Survey({
       alert("Por favor, ingresa los datos del encuestado para comenzar.");
       return;
     }
-    //1.- pantalla "cargando..." y se deshabilita el boton de comfirmar datos
+
     setCargandoGPS(true);
-    //2.- La promesa de la antena regresa verdad o falso
+
     const gpsExitoso = await capturarGPS();
-    // se apaga la pantalla
+
     setCargandoGPS(false);
 
     if (gpsExitoso === true) {
@@ -128,13 +126,35 @@ export default function Survey({
     }
   };
 
+  const esFormularioIncompleto = () => {
+    if (!edad) return true;
+    if (!sexo) return true;
+    if (!p1) return true;
+    if (!p2) return true;
+    if (p2 === "si" && !p2cual) return true;
+    if (!p3) return true;
+    if (p3 === "si" && !p3lengua) return true;
+    if (!p4) return true;
+    if (p4 === "si" && !p4_folio) return true;
+    if (p4 === "si" && !p5_folio) return true;
+    if (!p6) return true;
+    if (p6 === "si" && !p6cuantos) return true;
+    return false;
+  };
+
+  const intentarGuardarEncuesta = () => {
+    if (esFormularioIncompleto()) {
+      setMostrarModalIncompleto(true);
+    } else {
+      guardarEncuestaLocal();
+    }
+  };
+
   const guardarEncuestaLocal = async () => {
     try {
       setGuardando(true);
-      //1.-se crea el folio
       const nuevoFolio = generarFolio(entrevistadorId);
 
-      //2.- empaqueta todo el schema de zod de validators.tsx
       const encuestaData = {
         entrevistador: entrevistadorId,
         folio: nuevoFolio,
@@ -145,7 +165,7 @@ export default function Survey({
         apellidoMaterno,
         edad,
         sexo,
-        fechaHora: new Date().toISOString(), //hora del dispositivo
+        fechaHora: new Date().toISOString(),
         ubicacion: {
           lat: lat || 0,
           lng: lng || 0,
@@ -158,18 +178,16 @@ export default function Survey({
           p2cual: p2 === "si" ? p2cual : "",
           p3,
           p3lengua: p3 === "si" ? p3lengua : "",
-          p4,
+          p4: p4,
           p4_folio: p4 === "si" ? p4_folio : "",
-          p5: p4 === "si" ? p5 : "",
-          p6,
+          p5_folio: p4 === "si" ? p5_folio : "",
+          p6: p6,
           p6cuantos: p6 === "si" ? p6cuantos : "",
         },
       };
 
-      //3.- mandamos a la base de datos interna Dexie
       await db.encuestas.add(encuestaData);
 
-      //4.- si Dexie lo guadó, muestra un mensaje de exito
       onTerminar();
     } catch (error) {
       console.error("Error al guardar la encuesta:", error);
@@ -194,7 +212,7 @@ export default function Survey({
       setP3lengua("");
       setP4("");
       setP4_folio("");
-      setP5("");
+      setP5_folio("");
       setP6("");
       setP6cuantos("");
       setLat(null);
@@ -207,7 +225,7 @@ export default function Survey({
 
   if (etapa === "datos_iniciales") {
     return (
-      <div className="flex flex-col p-6 pt-20 bg-linear-to-b from-red-600 to-red-900 gap-8 pb-32 min-h-screen justify-center items-center">
+      <div className="flex flex-col p-6 pt-20 bg-linear-to-b from-red-900 to-red-600 gap-8 pb-32 min-h-screen justify-center items-center">
         <div className="relative w-full max-w-sm flex flex-col gap-6 bg-white p-8 rounded-2xl shadow-lg border-white">
           <h1
             className="text-transparent bg-linear-to-r from-red-800 to-red-600 
@@ -236,7 +254,6 @@ export default function Survey({
             </p>
           </div>
 
-          {/* === CAMPO: NOMBRE === */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <User className="h-6 w-6 text-gray-400" />
@@ -252,7 +269,6 @@ export default function Survey({
             />
           </div>
 
-          {/* === 2. CAMPO: APELLIDO PATERNO === */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <User className="h-6 w-6 text-gray-400 opacity-60" />
@@ -265,7 +281,7 @@ export default function Survey({
               disabled={cargandoGPS}
             />
           </div>
-          {/* === 3. CAMPO: APELLIDO MATERNO === */}
+
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <User className="h-6 w-6 text-gray-400 opacity-60" />
@@ -278,9 +294,8 @@ export default function Survey({
               disabled={cargandoGPS}
             />
           </div>
-          {/* === 4. CAMPO: EDAD === */}
+
           <div className="flex gap-4">
-            {/* 4a. EDAD (50% de ancho ancho "w-1/2") */}
             <div className="relative w-1/2">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Hash className="h-6 w-6 text-gray-400" />
@@ -301,7 +316,6 @@ export default function Survey({
                 disabled={cargandoGPS}
               />
             </div>
-            {/* 4b. SEXO (Dropdown) (50% de ancho "w-1/2") */}
             <div className="relative w-1/2">
               <select
                 className={`w-full px-4 py-4 text-xl font-bold rounded-xl bg-gray-100 border border-transparent transition-all outline-none focus:bg-white focus:border-red-700 appearance-none cursor-pointer ${
@@ -311,7 +325,6 @@ export default function Survey({
                 onChange={(e) => setSexo(e.target.value)}
                 disabled={cargandoGPS}
               >
-                {/* Opción fantasma de placeholder */}
                 <option value="" disabled hidden>
                   Sexo
                 </option>
@@ -323,7 +336,6 @@ export default function Survey({
                 </option>
               </select>
 
-              {/* Ícono de flechita nativa para que se vea premium */}
               <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                 <ChevronDown className="h-6 w-6 text-gray-400" />
               </div>
@@ -347,12 +359,9 @@ export default function Survey({
           >
             {cargandoGPS ? (
               <>
-                {/* Ícono anclado a la izquierda */}
                 <div className="absolute left-6 flex items-center">
                   <MapPin className="w-7 h-7 animate-bounce" />
                 </div>
-
-                {/* Agregamos px-10 (padding horizontal) para que el texto no toque los bordes donde está el icono */}
                 <div className="text-xl flex tracking-wide px-10 text-center justify-center w-full">
                   <span>Obteniendo ubicación</span>
                   <div className="flex">
@@ -395,8 +404,8 @@ export default function Survey({
   }
 
   return (
-    <div className="flex flex-col px-3 py-6 gap-8 pb-32 bg-gray-50 h-full w-full overflow-hidden">
-      {/* ENCABEZADO FIJO (H1) */}
+    <div className="flex flex-col px-3 py-6 gap-8 pb-10 bg-gray-50 min-h-screen w-full">
+      {/* ENCABEZADO */}
       <div className="shrink-0">
         <h1
           className="text-5xl font-black text-transparent pl-3 bg-linear-to-r from-red-800 to-red-600 
@@ -406,35 +415,30 @@ export default function Survey({
         </h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto flex flex-col gap-8 pb-10">
+      <div className="flex flex-col gap-8">
         {/* PREGUNTA 1 */}
         <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col gap-6">
-          {/* Texto limpio y oscuro */}
           <p className="text-xl font-bold text-gray-700 leading-snug">
             1. ¿En los últimos años ha recibido algún programa de
             alfabetización?
           </p>
-
-          {/* Reemplazamos los Radios Redondos por Cajas Anchas Mate */}
           <div className="flex gap-4">
-            {/* BOTÓN SÍ */}
             <label
               className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
                 p1 === "si"
-                  ? "bg-red-50 border-red-500 text-red-600" // Brillará si lo seleccionan
-                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200" // Apagado mate
+                  ? "bg-red-50 border-red-500 text-red-600"
+                  : "bg-gray-100 border-transparent text-gray-400 hover:bg-gray-200"
               }`}
             >
               <input
                 type="radio"
                 name="p1"
                 value="si"
-                className="hidden" // <--- radio button cambio
+                className="hidden"
                 onChange={(e) => setP1(e.target.value)}
               />
               Sí
             </label>
-            {/* BOTÓN NO */}
             <label
               className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
                 p1 === "no"
@@ -446,7 +450,7 @@ export default function Survey({
                 type="radio"
                 name="p1"
                 value="no"
-                className="hidden" // Ocultamos la bolita de Radio
+                className="hidden"
                 onChange={(e) => setP1(e.target.value)}
               />
               No
@@ -458,7 +462,6 @@ export default function Survey({
           <p className="text-xl font-bold text-gray-700 leading-snug">
             2. ¿Ha recibido apoyo económico de algún programa de alfabetización?
           </p>
-          {/* BOTONES SÍ / NO */}
           <div className="flex gap-4">
             <label
               className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
@@ -493,14 +496,12 @@ export default function Survey({
               No
             </label>
           </div>
-          {/* SUB-PREGUNTA DINÁMICA (Solo sale si opres SÍ) */}
+          {/* SUB-PREGUNTA DINÁMICA */}
           {p2 === "si" && (
             <div className="flex flex-col gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
               <p className="text-lg font-bold text-gray-600 text-center">
                 ¿De qué programa?
               </p>
-
-              {/* Opciones en lista vertical tipo examen para leerlas bien */}
               <div className="flex flex-col gap-3">
                 {["INEA", "Chiapas Puede", "Otro"].map((op) => (
                   <label
@@ -531,7 +532,6 @@ export default function Survey({
           <p className="text-xl font-bold text-gray-700 leading-snug">
             3. ¿Sabe leer?
           </p>
-          {/* BOTONES SÍ / NO */}
           <div className="flex gap-4">
             <label
               className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
@@ -566,7 +566,7 @@ export default function Survey({
               No
             </label>
           </div>
-          {/* SUB-PREGUNTA DINÁMICA (Solo sale si es SÍ) */}
+          {/* SUB-PREGUNTA DINÁMICA */}
           {p3 === "si" && (
             <div className="flex flex-col gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-200">
               <p className="text-lg font-bold text-gray-600 text-center">
@@ -641,7 +641,6 @@ export default function Survey({
           <p className="text-xl font-bold text-gray-700 leading-snug">
             4. ¿Sabe escribir?
           </p>
-          {/* BOTONES SÍ / NO */}
           <div className="flex gap-4">
             <label
               className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
@@ -676,7 +675,6 @@ export default function Survey({
               No
             </label>
           </div>
-          {/* CAJA DE TEXTO DINÁMICA (Solo sale si es SÍ) */}
           {p4 === "si" && (
             <div className="flex flex-col gap-3 mt-1">
               <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
@@ -686,7 +684,7 @@ export default function Survey({
                 className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 
               border border-transparent text-gray-700 placeholder-gray-400 
               focus:bg-white focus:border-red-400 transition-all outline-none"
-                placeholder="Ingrese el Folio de la hoja de evaluación..."
+                placeholder="Ingrese el folio de la hoja de evaluación..."
                 value={p4_folio}
                 onChange={(e) => setP4_folio(e.target.value)}
               />
@@ -706,9 +704,9 @@ export default function Survey({
               </p>
               <input
                 className="w-full p-4 text-xl font-bold rounded-2xl bg-gray-100 border border-transparent text-gray-700 placeholder-gray-400 focus:bg-white focus:border-red-400 transition-all outline-none"
-                placeholder="vocales ..."
-                value={p5}
-                onChange={(e) => setP5(e.target.value)}
+                placeholder="Ingrese folio de la hoja de evaluación"
+                value={p5_folio}
+                onChange={(e) => setP5_folio(e.target.value)}
               />
             </div>
           </div>
@@ -719,7 +717,6 @@ export default function Survey({
           <p className="text-xl font-bold text-gray-700 leading-snug">
             6. ¿Conoce a alguien que no sepa leer y escribir?
           </p>
-          {/* BOTONES SÍ / NO */}
           <div className="flex gap-4">
             <label
               className={`flex-1 rounded-2xl p-4 text-center text-xl font-bold cursor-pointer transition-all border-2 ${
@@ -754,7 +751,6 @@ export default function Survey({
               No
             </label>
           </div>
-          {/* CAJA DE TEXTO DINÁMICA (Solo sale si es SÍ) */}
           {p6 === "si" && (
             <div className="flex flex-col gap-3 mt-1">
               <p className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">
@@ -773,8 +769,8 @@ export default function Survey({
 
         {/* BOTÓN FINALIZAR */}
         <button
-          className={`${guardando ? "font-bold opacity-50 cursor-not-allowed" : ""} bg-red-600 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full`}
-          onClick={guardarEncuestaLocal}
+          className={`${guardando ? "font-black opacity-50 cursor-not-allowed" : ""} bg-red-600 text-white text-2xl rounded-xl p-6 min-h-[80px] w-full`}
+          onClick={intentarGuardarEncuesta}
           disabled={guardando}
         >
           {guardando ? "Guardando..." : "Guardar Encuesta ✓"}
@@ -786,6 +782,41 @@ export default function Survey({
         >
           Cancelar Encuesta X
         </button>
+
+        {/* ENCUESTA INCOMPLETA */}
+        {mostrarModalIncompleto && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl flex flex-col gap-5 text-center items-center">
+              <div className="w-16 h-16 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mb-2">
+                <span className="text-3xl">⚠️</span>
+              </div>
+              <h3 className="text-2xl font-black text-slate-800">
+                Preguntas sin responder
+              </h3>
+              <p className="text-slate-500 font-medium leading-relaxed">
+                Parece que dejaste algunas preguntas o campos sin contestar.
+                ¿Estás seguro de que deseas guardar la encuesta así?
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 w-full mt-4">
+                <button
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-colors"
+                  onClick={() => setMostrarModalIncompleto(false)}
+                >
+                  Volver a revisar
+                </button>
+                <button
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-orange-500/30 transition-colors"
+                  onClick={() => {
+                    setMostrarModalIncompleto(false);
+                    guardarEncuestaLocal();
+                  }}
+                >
+                  Sí, Guardar así
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

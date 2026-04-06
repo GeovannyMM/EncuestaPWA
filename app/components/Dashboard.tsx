@@ -35,18 +35,11 @@ export default function Dashboard({
   entrevistadorId,
   onCerrarSesion,
 }: Props) {
-  {
-    /*datos temporales en lo que conecto a Dexie*/
-  }
-
-  // se guardan las encuestas que se traen de DEXIEs
   const [encuestasReales, setEncuestasReales] = useState<any[]>([]);
 
-  //se muestra el total de encuestas guardadas
   const [totalEncuestas, setTotalEncuestas] = useState(0);
   const [menuAbierto, setMenuAbierto] = useState(false);
 
-  //funcion que se activa junto al dashboard
   useEffect(() => {
     const cargarDatos = async () => {
       try {
@@ -64,8 +57,6 @@ export default function Dashboard({
     };
     cargarDatos();
   }, [entrevistadorId]);
-
-  //con conexion
 
   useEffect(() => {
     const resolverLugaresPendientes = async () => {
@@ -97,7 +88,6 @@ export default function Dashboard({
     };
     resolverLugaresPendientes();
 
-    // Cuando el sistema operativo detecte señal, despierta esta función
     window.addEventListener("online", resolverLugaresPendientes);
 
     return () => {
@@ -111,19 +101,17 @@ export default function Dashboard({
     );
     if (confirmar) {
       await db.encuestas.delete(id);
-      // Recarga la lista quitando la borrada
+
       setEncuestasReales((prev) => prev.filter((e) => e.id !== id));
       setTotalEncuestas((prev) => prev - 1);
     }
   };
 
   const sincronizarEncuestas = async () => {
-    // Seguro Anti-Carreras: Solo empuja a MySQL si NO está sincronizada Y (ya cargó el lugar O no tiene GPS)
     const pendientes = encuestasReales.filter(
       (e) => !e.estado_sinc && (e.lugar !== "" || e.ubicacion.lat === 0),
     );
     if (pendientes.length === 0) {
-      // alert("No hay encuestas pendientes de sincronizar");
       return;
     }
 
@@ -166,9 +154,7 @@ export default function Dashboard({
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-white relative">
-      {/* 1. BARRA SUPERIOR (Menú Dropdown IZQUIERDA | Logo DERECHA) */}
       <div className="flex items-center justify-between px-4 pt-3 relative z-50 mb-3">
-        {/* === LADO IZQUIERDO: MENÚ HAMBURGUESA === */}
         <div className="relative">
           <button
             onClick={() => setMenuAbierto(!menuAbierto)}
@@ -191,26 +177,26 @@ export default function Dashboard({
           )}
         </div>
 
-        {/* === LADO DERECHO: LOGO === */}
+        {/* === LOGO === */}
         <div className="pr-2 drop-shadow-sm">
           <Image
             src="/corazonchiapas.svg"
             alt="Logo Corazón Chiapas"
-            width={70}
-            height={70}
+            width={60}
+            height={60}
             className="object-contain"
             priority
           />
         </div>
       </div>
 
-      {/* ZONA DEL TÍTULO (Alineado en una sola línea) */}
-      <div className="flex flex-col px-6 pt-2 mb-10">
+      {/* -------TITULO INICIO----- */}
+      <div className="flex flex-col px-6 pt-2 mb-10 mt-5">
         <h1
           className={`${montserrat.className} text-[30px] text-slate-900 font-extrabold 
           tracking-tighter uppercase leading-none`}
         >
-          Bienvenido,{" "}
+          Bienvenid@,{" "}
           <span className="text-red-600 font-extrabold">
             {nombreEntrevistador}!
           </span>
@@ -226,7 +212,6 @@ export default function Dashboard({
           <NotebookPen className="w-8 h-8 text-black opacity-80" />
           Encuestas Realizadas
         </h1>
-        {/* El contador se va elegante a la derecha */}
         <div className="bg-gray-100 text-gray-500 font-extrabold px-4 py-1.5 rounded-2xl text-lg border border-gray-200 shadow-sm">
           {totalEncuestas}
         </div>
@@ -244,9 +229,7 @@ export default function Dashboard({
               className="bg-[#FF4D58] rounded-2xl p-6 flex flex-col shadow-xl shadow-red-200/50
           text-white relative"
             >
-              {/* --- INICIO DEL ENCABEZADO DE TARJETA --- */}
               <div className="flex justify-between items-center mb-3 gap-4">
-                {/* Izquierda: Usuario y Nombre */}
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   <div className="bg-white/20 p-2 rounded-full shrink-0">
                     <User className="w-5 h-5 text-white" />
@@ -258,7 +241,6 @@ export default function Dashboard({
                   </h2>
                 </div>
 
-                {/* Derecha: Ícono Exclamación / check */}
                 <div className="shrink-0">
                   {enc.estado_sinc ? (
                     <CheckCircle2 className="w-7 h-7 stroke-[3px] text-green-300 drop-shadow-md" />
@@ -272,7 +254,6 @@ export default function Dashboard({
                   )}
                 </div>
               </div>
-              {/* --- FIN DEL ENCABEZADO DE TARJETA --- */}
 
               <p className="flex items-center gap-3 text-white/90 text-lg font-bold mb-1 tracking-wider">
                 <Hash className="w-6 h-6 text-white shrink-0" />

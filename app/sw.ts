@@ -12,7 +12,6 @@ declare global {
 declare const self: WorkerGlobalScope;
 
 const serwist = new Serwist({
-  // Inyectamos agresivamente la página principal al caché de instalación
   precacheEntries: [
     ...(self.__SW_MANIFEST || []),
     { url: "/", revision: "v1-app-router" }
@@ -24,7 +23,7 @@ const serwist = new Serwist({
   fallbacks: {
     entries: [
       {
-        url: "/", // <-- Ahora sí la encontrará en el caché
+        url: "/",
         matcher({ request }) {
           return request.destination === "document";
         },
