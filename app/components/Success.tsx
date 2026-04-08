@@ -1,31 +1,31 @@
 "use client";
 
 type Props = {
-  onVolver: () => void; // al presionar vuelve al dashboard
+  onVolver: () => void;
 };
 
 export default function Success({ onVolver }: Props) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-8 gap-6">
       <style>{`
-        /* 1. Dibuja el círculo exterior */
+        /* 1. círculo exterior */
         .success-circle {
           stroke-dasharray: 166;
           stroke-dashoffset: 166;
           animation: trazo 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
         }
-        /* 2. Dibuja la palomita de adentro después de un respiro */
+        /* 2. check list */
         .success-check {
           stroke-dasharray: 48;
           stroke-dashoffset: 48;
           animation: trazo 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
         }
-        /* 3. Escala y rebota (Pop) después de dibujarse */
+        /* 3. Animación escala y rebote */
         .success-wrapper {
           animation: escalar 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
                      botar 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.9s forwards;
         }
-        /* 4. Suelta el "¡Poof!" (Onda verde) hacia atrás */
+        /* 4. Animación de explosión */
         .success-poof {
           animation: explotar 0.8s ease-out 0.8s forwards;
         }
