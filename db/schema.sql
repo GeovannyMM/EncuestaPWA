@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 CREATE TABLE IF NOT EXISTS encuestas (
   id                INT AUTO_INCREMENT PRIMARY KEY,
   folio             VARCHAR(50) UNIQUE NOT NULL,
-  entrevistador_id  INT NOT NULL,
+  encuestador_id  INT NOT NULL,
   nombre_encuestado VARCHAR(255) NOT NULL,
   nombre            VARCHAR(100),
   apellido_paterno  VARCHAR(100),
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS encuestas (
   estado_sinc BOOLEAN DEFAULT FALSE,
   sincronizado_en   DATETIME,
   creado_en         DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (entrevistador_id) REFERENCES usuarios(id)
+  FOREIGN KEY (encuestador_id) REFERENCES usuarios(id)
 );
 
 
@@ -55,3 +55,7 @@ ALTER TABLE encuestas ADD COLUMN sexo VARCHAR(10) AFTER edad;
 ---------------------------------------------------------------
 
 ALTER TABLE encuestas CHANGE p4escrito p4_folio VARCHAR(100);
+
+------------------------------------------------------------------------------------
+
+ALTER TABLE encuestas CHANGE COLUMN entrevistador_id encuestador_id INT NOT NULL;

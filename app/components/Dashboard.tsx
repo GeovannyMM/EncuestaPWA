@@ -24,15 +24,15 @@ const montserrat = Montserrat({
 
 type Props = {
   onNuevaEncuesta: () => void;
-  nombreEntrevistador: string;
-  entrevistadorId: number;
+  nombreEncuestador: string;
+  encuestadorId: number;
   onCerrarSesion: () => void;
 };
 
 export default function Dashboard({
   onNuevaEncuesta,
-  nombreEntrevistador,
-  entrevistadorId,
+  nombreEncuestador,
+  encuestadorId,
   onCerrarSesion,
 }: Props) {
   const [encuestasReales, setEncuestasReales] = useState<any[]>([]);
@@ -44,8 +44,8 @@ export default function Dashboard({
     const cargarDatos = async () => {
       try {
         const todas = await db.encuestas
-          .where("entrevistador")
-          .equals(entrevistadorId)
+          .where("encuestador")
+          .equals(encuestadorId)
           .reverse()
           .sortBy("fechaHora");
 
@@ -56,7 +56,7 @@ export default function Dashboard({
       }
     };
     cargarDatos();
-  }, [entrevistadorId]);
+  }, [encuestadorId]);
 
   useEffect(() => {
     const resolverLugaresPendientes = async () => {
@@ -196,9 +196,9 @@ export default function Dashboard({
           className={`${montserrat.className} text-[30px] text-slate-900 font-extrabold 
           tracking-tighter uppercase leading-none`}
         >
-          Bienvenid@,{" "}
+          ¡Hola de nuevo, <br />
           <span className="text-red-600 font-extrabold">
-            {nombreEntrevistador}!
+            {nombreEncuestador}!
           </span>
         </h1>
 

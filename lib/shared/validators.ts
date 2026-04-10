@@ -9,7 +9,7 @@ export type Usuario = z.infer<typeof usuarioSchema>;
 
 // La palabra 'export' es CLAVE para que otros archivos lo vean
 export const encuestaSchema = z.object({
-  entrevistador: z.number(),
+  encuestador: z.number(),
   folio: z.string(),
   nombreEncuestado: z.string().min(5),
   nombre: z.string().min(2),

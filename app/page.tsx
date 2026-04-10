@@ -10,8 +10,8 @@ type Step = "login" | "dashboard" | "survey" | "success";
 
 export default function Home() {
   const [step, setStep] = useState<Step>("login");
-  const [entrevistadorId, setEntrevistadorId] = useState<number>(0);
-  const [entrevistadorNombre, setEntrevistadorNombre] = useState("");
+  const [encuestadorId, setEncuestadorId] = useState<number>(0);
+  const [encuestadorNombre, setEncuestadorNombre] = useState("");
   const [cargandoSesion, setCargandoSesion] = useState(true);
 
   useEffect(() => {
@@ -20,8 +20,8 @@ export default function Home() {
       if (sesionGuardada) {
         const datos = JSON.parse(sesionGuardada);
         if (datos && datos.id) {
-          setEntrevistadorId(datos.id);
-          setEntrevistadorNombre(datos.nombre);
+          setEncuestadorId(datos.id);
+          setEncuestadorNombre(datos.nombre);
           setStep("dashboard");
         } else {
           localStorage.removeItem("encuesta_sesion");
@@ -43,8 +43,8 @@ export default function Home() {
         {step === "login" && (
           <Login
             onLogin={(id, nombre) => {
-              setEntrevistadorId(id);
-              setEntrevistadorNombre(nombre);
+              setEncuestadorId(id);
+              setEncuestadorNombre(nombre);
               localStorage.setItem(
                 "encuesta_sesion",
                 JSON.stringify({ id, nombre }),
@@ -58,20 +58,20 @@ export default function Home() {
             onNuevaEncuesta={() => setStep("survey")}
             onCerrarSesion={() => {
               localStorage.removeItem("encuesta_sesion");
-              setEntrevistadorId(0);
-              setEntrevistadorNombre("");
+              setEncuestadorId(0);
+              setEncuestadorNombre("");
               setStep("login");
             }}
-            nombreEntrevistador={entrevistadorNombre}
-            entrevistadorId={entrevistadorId}
+            nombreEncuestador={encuestadorNombre}
+            encuestadorId={encuestadorId}
           />
         )}
         {step === "survey" && (
           <Survey
             onTerminar={() => setStep("success")}
             onCancelar={() => setStep("dashboard")}
-            entrevistadorId={entrevistadorId}
-            entrevistadorNombre={entrevistadorNombre}
+            encuestadorId={encuestadorId}
+            encuestadorNombre={encuestadorNombre}
           />
         )}
         {step === "success" && (

@@ -10,7 +10,7 @@ export class EncuestasDB extends Dexie {
     super("EncuestasDB");
     this.version(1).stores({
       encuestas:
-        "++id, entrevistador, folio, nombreEncuestado, fechaHora, ubicacion, estado_sinc",
+        "++id, encuestador, folio, nombreEncuestado, fechaHora, ubicacion, estado_sinc",
       usuarios: "id, nombre_completo, usuario_slug",
     });
   }

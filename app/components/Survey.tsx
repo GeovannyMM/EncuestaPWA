@@ -16,8 +16,8 @@ type Props = {
   onTerminar: () => void;
   onCancelar: () => void;
 
-  entrevistadorId: number;
-  entrevistadorNombre: string;
+  encuestadorId: number;
+  encuestadorNombre: string;
 };
 
 type EtapaInterna = "datos_iniciales" | "preguntas";
@@ -25,8 +25,8 @@ type EtapaInterna = "datos_iniciales" | "preguntas";
 export default function Survey({
   onTerminar,
   onCancelar,
-  entrevistadorId,
-  entrevistadorNombre,
+  encuestadorId,
+  encuestadorNombre,
 }: Props) {
   const [etapa, setEtapa] = useState<EtapaInterna>("datos_iniciales");
   const [lat, setLat] = useState<number | null>(null); // latitud del GPS
@@ -98,7 +98,7 @@ export default function Survey({
           );
           resolve(false);
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+        { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 },
       );
     });
   };
@@ -153,10 +153,10 @@ export default function Survey({
   const guardarEncuestaLocal = async () => {
     try {
       setGuardando(true);
-      const nuevoFolio = generarFolio(entrevistadorId);
+      const nuevoFolio = generarFolio(encuestadorId);
 
       const encuestaData = {
-        entrevistador: entrevistadorId,
+        encuestador: encuestadorId,
         folio: nuevoFolio,
         nombreEncuestado:
           `${nombre} ${apellidoPaterno} ${apellidoMaterno}`.trim(),
@@ -362,7 +362,7 @@ export default function Survey({
                 <div className="absolute left-6 flex items-center">
                   <MapPin className="w-7 h-7 animate-bounce" />
                 </div>
-                <div className="text-xl flex tracking-wide px-10 text-center justify-center w-full">
+                <div className="text-xl flex font-bold tracking-wide px-10 text-center justify-center w-full">
                   <span>Obteniendo ubicación</span>
                   <div className="flex">
                     <span
@@ -392,7 +392,7 @@ export default function Survey({
                 Intentar de nuevo
               </>
             ) : (
-              <span className="flex items-center gap-1">
+              <span className="flex items-center font-black gap-1">
                 Comenzar Cuestionario
                 <ArrowRight className="w-7 h-7 stroke-[3px]" />
               </span>
