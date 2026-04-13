@@ -11,10 +11,10 @@ export type Usuario = z.infer<typeof usuarioSchema>;
 export const encuestaSchema = z.object({
   encuestador: z.number(),
   folio: z.string(),
-  nombreEncuestado: z.string().min(5),
-  nombre: z.string().min(2),
-  apellidoPaterno: z.string().min(2),
-  apellidoMaterno: z.string().min(2),
+  nombreEncuestado: z.string(),
+  nombre: z.string(),
+  apellidoPaterno: z.string(),
+  apellidoMaterno: z.string(),
   edad: z.string(),
   sexo: z.string(),
   ubicacion: z

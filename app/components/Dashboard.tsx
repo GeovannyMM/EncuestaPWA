@@ -70,8 +70,14 @@ export default function Dashboard({
         try {
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${enc.ubicacion.lat}&lon=${enc.ubicacion.lng}&format=json`,
+            {
+              headers: {
+                "User-Agent": "EncuestasChiapasApp/1.0(gobierno)",
+              },
+            },
           );
           const data = await res.json();
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           const nombreLugar =
             data.address.city ||
             data.address.town ||
@@ -83,7 +89,9 @@ export default function Dashboard({
               e.id === enc.id ? { ...e, lugar: nombreLugar } : e,
             ),
           );
-        } catch {}
+        } catch (error) {
+          console.error("Fallo obteniendo la ciudad en segundo plano:", error);
+        }
       }
     };
     resolverLugaresPendientes();
@@ -136,7 +144,12 @@ export default function Dashboard({
 
           exitosas++;
         }
-      } catch {}
+      } catch (error) {
+        console.error(
+          "Fallo temporal sincronizando la encuesta con ID " + enc.id,
+          error,
+        );
+      }
     }
   };
 

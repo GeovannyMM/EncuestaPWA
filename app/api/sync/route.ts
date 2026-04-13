@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import pool from "../../../lib/server/mysql";
+import { encuestaSchema } from "../../../lib/shared/validators";
+
 
 export async function POST(req: NextRequest) {
   try {
-    const encuesta = await req.json();
+    const datosRecibidos = await req.json();
+
+    // AQUÍ ES DONDE ZOD TRABAJA DE VERDAD:
+    const validacion = encuestaSchema.safeParse(datosRecibidos);
+    
+    if (!validacion.success) {
+      console.error("Zod bloqueó una encuesta corrupta:", validacion.error.issues);
+      return NextResponse.json({ ok: false, error: "Datos inválidos", detalles: validacion.error.issues }, { status: 400 });
+    }
+
+    const encuesta = validacion.data;
 
     await pool.execute(
       `INSERT IGNORE INTO encuestas 
