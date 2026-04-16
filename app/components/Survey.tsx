@@ -51,6 +51,45 @@ export default function Survey({
   const [p6, setP6] = useState("");
   const [p6cuantos, setP6cuantos] = useState("");
   const [mostrarModalIncompleto, setMostrarModalIncompleto] = useState(false);
+  const [borradorRestaurado, setBorradorRestaurado] = useState(false);
+
+  useEffect(() => {
+    // 1. Cargar borrador al abrir (si existe)
+    try {
+      const guardado = localStorage.getItem("encuesta_borrador");
+      if (guardado) {
+        const p = JSON.parse(guardado);
+        
+        // Diccionario de funciones de actualización (Setters)
+        const setters: Record<string, any> = {
+          etapa: setEtapa, lat: setLat, lng: setLng, lugar: setLugar, 
+          nombre: setNombre, apellidoPaterno: setApellidoPaterno, 
+          apellidoMaterno: setApellidoMaterno, edad: setEdad, sexo: setSexo, 
+          p1: setP1, p2: setP2, p2cual: setP2cual, p3: setP3, p3lengua: setP3lengua, 
+          p4: setP4, p4_folio: setP4_folio, p5_folio: setP5_folio, p6: setP6, 
+          p6cuantos: setP6cuantos
+        };
+
+        // Recorremos las claves guardadas e inyectamos su valor dinámicamente
+        Object.keys(p).forEach(key => {
+          if (p[key] !== null && p[key] !== undefined && setters[key]) {
+            setters[key](p[key]);
+          }
+        });
+      }
+    } catch(e) {}
+    setBorradorRestaurado(true);
+  }, []);
+
+  useEffect(() => {
+    // 2. Guardar silenciosamente en cada tecleo
+    if (!borradorRestaurado) return; // Evitar limpiar la memoria al inicio
+    const borrador = {
+      etapa, lat, lng, lugar, nombre, apellidoPaterno, apellidoMaterno, 
+      edad, sexo, p1, p2, p2cual, p3, p3lengua, p4, p4_folio, p5_folio, p6, p6cuantos
+    };
+    localStorage.setItem("encuesta_borrador", JSON.stringify(borrador));
+  }, [borradorRestaurado, etapa, lat, lng, lugar, nombre, apellidoPaterno, apellidoMaterno, edad, sexo, p1, p2, p2cual, p3, p3lengua, p4, p4_folio, p5_folio, p6, p6cuantos]);
 
   const handleEdadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -188,6 +227,7 @@ export default function Survey({
 
       await db.encuestas.add(encuestaData);
 
+      localStorage.removeItem("encuesta_borrador");
       onTerminar();
     } catch (error) {
       console.error("Error al guardar la encuesta:", error);
@@ -201,6 +241,7 @@ export default function Survey({
       "¿Seguro que quieres cancelar la encuesta?? no se guardaran los datos",
     );
     if (confirmar) {
+      localStorage.removeItem("encuesta_borrador");
       setNombre("");
       setApellidoPaterno("");
       setApellidoMaterno("");

@@ -22,7 +22,12 @@ export default function Home() {
         if (datos && datos.id) {
           setEncuestadorId(datos.id);
           setEncuestadorNombre(datos.nombre);
-          setStep("dashboard");
+          
+          if (localStorage.getItem("encuesta_borrador")) {
+            setStep("survey");
+          } else {
+            setStep("dashboard");
+          }
         } else {
           localStorage.removeItem("encuesta_sesion");
         }
